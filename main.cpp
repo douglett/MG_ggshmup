@@ -2,6 +2,26 @@
 using namespace std;
 
 SDL_Surface *buf, *tileset;
+vector<string> gmap = {
+	"##########",
+	".,.,.,.,.,",
+	",.,.,.,.,.",
+	".,.,.,.,.,",
+	",.,.,.,.,.",
+	".,.,.,.,.,",
+	",.,.,.,.,.,.,.,.",
+	".,.,.,.,.,",
+	",.,.#.,.,.",
+	".,.,.,.,.,",
+	",.,.,.,.,.",
+	".,.,.,.,.,",
+	",.,.,.,.,.",
+	".,.,.,.,.#",
+};
+namespace viewport {
+	int posx = 1,  posy = 0;
+	int offx = 0,  offy = 0;
+}
 
 
 int main(int argc, char** argv) {
@@ -33,6 +53,15 @@ int mainloop() {
 		while (SDL_PollEvent(&e))
 			if (e.type == SDL_QUIT)
 				mainloop = 0;
+			else if (e.type == SDL_KEYDOWN) {
+				switch (e.key.keysym.sym) {
+				case SDLK_UP:     viewport::posy--;  break;
+				case SDLK_RIGHT:  viewport::posx++;  break;
+				case SDLK_DOWN:   viewport::posy++;  break;
+				case SDLK_LEFT:   viewport::posx--;  break;
+				default:  ;
+				}
+			}
 				
 		paint1();
 		
@@ -40,6 +69,7 @@ int mainloop() {
 		SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
 		scalex( SDL_GetVideoSurface(), 3 );
 		SDL_Flip( SDL_GetVideoSurface() );
+		SDL_Delay(16);
 	}
 	
 	return 0;
@@ -47,10 +77,27 @@ int mainloop() {
 
 
 void paint1() {
-	SDL_FillRect(buf, NULL, 0xff0000ff);
-	SDL_Rect r = { 16, 16, 16, 16 };
-	SDL_FillRect(buf, &r, 0x00ff00ff);
+	SDL_FillRect(buf, NULL, 0x111111ff);
+//	SDL_Rect r = { 16, 16, 16, 16 };
+//	SDL_FillRect(buf, &r, 0x00ff00ff);
 	
-	SDL_BlitSurface(tileset, &r, buf, &r);
+//	SDL_BlitSurface(tileset, &r, buf, &r);
+	
+	for (int y = -1; y <= 9; y++)
+	for (int x = -1; x <= 10; x++) {
+		if (viewport::posy + y < 0 || viewport::posy + y >= gmap.size())  continue;
+		if (viewport::posx + x < 0 || viewport::posx + x >= gmap[viewport::posy + y].size())  continue;
+		uint32_t c = 0;
+		char t = gmap[viewport::posy + y][viewport::posx + x];
+		switch (t) {
+		case ' ':  continue;
+		case '#':  c = 0x999999ff;  break;
+		case '.':  c = 0x00aa00ff;  break;
+		case ',':  c = 0x008800ff;  break;
+		}
+		SDL_Rect r = { 0, 0, 16, 16 };
+		r.x = x*16 + viewport::offx,  r.y = y*16 + viewport::offy;
+		SDL_FillRect(buf, &r, c);
+	}
 }
 

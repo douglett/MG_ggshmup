@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
-#include <string>
 #include <cstdint>
+#include <string>
+#include <vector>
 #include <SDL/SDL.h>
 
 extern SDL_Surface *buf;
