@@ -45,7 +45,6 @@ int main(int argc, char** argv) {
 
 
 int mainloop() {
-	SDL_Rect bufpos = { 24, 8, 0, 0 };
 	SDL_Event e;
 	int mainloop = 1;
 	
@@ -55,24 +54,44 @@ int mainloop() {
 				mainloop = 0;
 			else if (e.type == SDL_KEYDOWN) {
 				switch (e.key.keysym.sym) {
-				case SDLK_UP:     viewport::posy--;  break;
-				case SDLK_RIGHT:  viewport::posx++;  break;
-				case SDLK_DOWN:   viewport::posy++;  break;
-				case SDLK_LEFT:   viewport::posx--;  break;
+//				case SDLK_UP:     viewport::posy--;  break;
+//				case SDLK_RIGHT:  viewport::posx++;  break;
+//				case SDLK_DOWN:   viewport::posy++;  break;
+//				case SDLK_LEFT:   viewport::posx--;  break;
+				case SDLK_UP:     walk(0);  break;
+				case SDLK_RIGHT:  walk(1);  break;
+				case SDLK_DOWN:   walk(2);  break;
+				case SDLK_LEFT:   walk(3);  break;
 				default:  ;
 				}
 			}
 				
 		paint1();
-		
-		SDL_FillRect( SDL_GetVideoSurface(), NULL, 0x0 );
-		SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
-		scalex( SDL_GetVideoSurface(), 3 );
-		SDL_Flip( SDL_GetVideoSurface() );
-		SDL_Delay(16);
+		flip3x();
 	}
 	
 	return 0;
+}
+
+
+void walk(int dir) {
+	for (int i=1; i<16; i++) {
+		switch (dir) {
+			case 0:  viewport::offy++;  break;
+			case 1:  viewport::offx--;  break;
+			case 2:  viewport::offy--;  break;
+			case 3:  viewport::offx++;  break;
+		}
+		paint1();
+		flip3x();
+	}
+	viewport::offy = viewport::offx = 0;
+	switch (dir) {
+		case 0:  viewport::posy--;  break;
+		case 1:  viewport::posx++;  break;
+		case 2:  viewport::posy++;  break;
+		case 3:  viewport::posx--;  break;
+	}
 }
 
 
@@ -99,5 +118,14 @@ void paint1() {
 		r.x = x*16 + viewport::offx,  r.y = y*16 + viewport::offy;
 		SDL_FillRect(buf, &r, c);
 	}
+}
+
+void flip3x() {
+	SDL_Rect bufpos = { 24, 8, 0, 0 };
+	SDL_FillRect( SDL_GetVideoSurface(), NULL, 0x0 );
+	SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
+	scalex( SDL_GetVideoSurface(), 3 );
+	SDL_Flip( SDL_GetVideoSurface() );
+	SDL_Delay(16);
 }
 
