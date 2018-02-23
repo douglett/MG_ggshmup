@@ -1,7 +1,7 @@
 #include "globals.h"
 using namespace std;
 
-SDL_Surface *buf = NULL;
+SDL_Surface *buf, *tileset;
 
 
 int main(int argc, char** argv) {
@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
 	
 	SDL_SetVideoMode( 640, 480, 32, SDL_HWSURFACE );
 	buf = SDL_CreateRGBSurface(SDL_SWSURFACE, 160, 144, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+	tileset = loadbmp("0x72_16x16DungeonTileset.v4.bmp");
 	
 	mainloop();
 	
@@ -49,5 +50,7 @@ void paint1() {
 	SDL_FillRect(buf, NULL, 0xff0000ff);
 	SDL_Rect r = { 16, 16, 16, 16 };
 	SDL_FillRect(buf, &r, 0x00ff00ff);
+	
+	SDL_BlitSurface(tileset, &r, buf, &r);
 }
 
