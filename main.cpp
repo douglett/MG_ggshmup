@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 	
 	SDL_SetVideoMode( 640, 480, 32, SDL_HWSURFACE );
 	buf = SDL_CreateRGBSurface(SDL_SWSURFACE, 160, 144, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-	tileset = loadbmp("0x72_16x16DungeonTileset.v4.bmp");
+	tileset = loadbmp("rpgindoor1.bmp");
 	
 	mainloop();
 	
@@ -118,6 +118,10 @@ void paint1() {
 		r.x = x*16 + viewport::offx,  r.y = y*16 + viewport::offy;
 		SDL_FillRect(buf, &r, c);
 	}
+	
+	SDL_Rect src = { 16*6, 0, 16*5, 16*2 };
+	SDL_Rect dst = { 16, 16, 0, 0 };
+	SDL_BlitSurface(tileset, &src, buf, &dst);
 }
 
 void flip3x() {
