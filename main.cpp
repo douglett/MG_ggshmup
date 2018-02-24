@@ -106,28 +106,23 @@ void walk(int dir) {
 
 
 void paint1() {
+	// cls
 	SDL_FillRect(buf, NULL, 0x111111ff);
-	
+	// loop each axis
 	for (int y = -1; y <= 9; y++)
 	for (int x = -1; x <= 10; x++) {
-		if (viewport::posy + y < 0 || viewport::posy + y >= gmap.size())  continue;
-		if (viewport::posx + x < 0 || viewport::posx + x >= gmap[viewport::posy + y].size())  continue;
-		uint32_t c = 0;
-		char t = gmap[viewport::posy + y][viewport::posx + x];
-		switch (t) {
-		case ' ':  continue;
-		case '#':  c = 0x999999ff;  break;
-		case '.':  c = 0x00aa00ff;  break;
-		case ',':  c = 0x008800ff;  break;
+		if (viewport::posy + y < 0 || viewport::posy + y >= map::height)  continue;
+		if (viewport::posx + x < 0 || viewport::posx + x >= map::width)  continue;
+		// loop each layer
+		for (int l = 0; l < 3; l++) {	
+			int t = map::tmap[l][(viewport::posy + y) * map::width + (viewport::posx + x)];
+			if (t == 0)  continue;
+			t--;
+			SDL_Rect src = { int16_t(t%11 * 16), int16_t(t/11 * 16), 16, 16 };
+			SDL_Rect dst = { int16_t(x*16 + viewport::offx), int16_t(y*16 + viewport::offy), 0, 0 };
+			SDL_BlitSurface(tileset, &src, buf, &dst);
 		}
-		SDL_Rect r = { 0, 0, 16, 16 };
-		r.x = x*16 + viewport::offx,  r.y = y*16 + viewport::offy;
-		SDL_FillRect(buf, &r, c);
 	}
-	
-	SDL_Rect src = { 16*6, 0, 16*5, 16*2 };
-	SDL_Rect dst = { 16, 16, 0, 0 };
-	SDL_BlitSurface(tileset, &src, buf, &dst);
 }
 
 void flip3x() {
