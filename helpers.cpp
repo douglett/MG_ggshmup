@@ -2,6 +2,19 @@
 #include <cassert>
 using namespace std;
 
+SDL_Surface* loadbmp(const std::string& fname) {
+	// load and convert to match backbuffer
+	SDL_Surface* t1 = SDL_LoadBMP(fname.c_str());
+	SDL_Surface* t2 = SDL_ConvertSurface(t1, buf->format, buf->flags);
+	SDL_FreeSurface(t1);
+	// set transparency
+	SDL_SetColorKey(t2, SDL_SRCCOLORKEY, 0xff00ffff);  // method 1
+	uint32_t* data = (uint32_t*)t2->pixels;  // method 2
+	for (int i = 0; i < t2->w * t2->h; i++)
+		if (data[i] == 0xff00ffff)  data[i] = 0xff00ff00;
+	return t2;
+}
+
 void scalex(SDL_Surface* sf, int sx) {
 	if (sf == NULL)  return;
 	assert(sx >= 1 && sx <= 5);
@@ -20,15 +33,13 @@ void scalex(SDL_Surface* sf, int sx) {
 	SDL_UnlockSurface(sf);
 }
 
-SDL_Surface* loadbmp(const std::string& fname) {
-	// load and convert to match backbuffer
-	SDL_Surface* t1 = SDL_LoadBMP(fname.c_str());
-	SDL_Surface* t2 = SDL_ConvertSurface(t1, buf->format, buf->flags);
-	SDL_FreeSurface(t1);
-	// set transparency
-	SDL_SetColorKey(t2, SDL_SRCCOLORKEY, 0xff00ffff);  // method 1
-	uint32_t* data = (uint32_t*)t2->pixels;  // method 2
-	for (int i = 0; i < t2->w * t2->h; i++)
-		if (data[i] == 0xff00ffff)  data[i] = 0xff00ff00;
-	return t2;
+void flip3x() {
+	// scale backbuffer and flip screen
+	SDL_Rect bufpos = { 24, 8, 0, 0 };
+	SDL_FillRect( SDL_GetVideoSurface(), NULL, 0x0 );
+	SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
+	scalex( SDL_GetVideoSurface(), 3 );
+	SDL_Flip( SDL_GetVideoSurface() );
+	SDL_Delay(16);
 }
+

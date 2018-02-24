@@ -2,24 +2,8 @@
 using namespace std;
 
 SDL_Surface *buf, *tileset, *guy;
-vector<string> gmap = {
-	"##########",
-	".,.,.,.,.,",
-	",.,.,.,.,.",
-	".,.,.,.,.,",
-	",.,.,.,.,.",
-	".,.,.,.,.,",
-	",.,.,.,.,.,.,.,.",
-	".,.,.,.,.,",
-	",.,.#.,.,.",
-	".,.,.,.,.,",
-	",.,.,.,.,.",
-	".,.,.,.,.,",
-	",.,.,.,.,.",
-	".,.,.,.,.#",
-};
 namespace viewport {
-	int posx = 1,  posy = 0;
+	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
 }
 
@@ -38,6 +22,9 @@ int main(int argc, char** argv) {
 	tileset = loadbmp("rpgindoor1.bmp");
 	guy = loadbmp("walker.bmp");
 	map::loadmap("room1.tmx");
+	
+	npcs::npclist.push_back({ "guy", 5, 5, 0, 0 });
+	npcs::npclist.push_back({ "guy", 6, 6, 0, 0 });
 	
 	mainloop();
 	
@@ -126,18 +113,11 @@ void paint1() {
 		}
 	}
 	
-	int guyx = 5,  guyy = 5;
 	SDL_Rect src = { 0, 18*2, 16, 18 };
-	SDL_Rect dst = { int16_t((guyx - viewport::posx) * 16 + viewport::offx), int16_t((guyy - viewport::posy) * 16 + viewport::offy - 6), 0, 0 };
-	SDL_BlitSurface(guy, &src, buf, &dst);
-}
-
-void flip3x() {
-	SDL_Rect bufpos = { 24, 8, 0, 0 };
-	SDL_FillRect( SDL_GetVideoSurface(), NULL, 0x0 );
-	SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
-	scalex( SDL_GetVideoSurface(), 3 );
-	SDL_Flip( SDL_GetVideoSurface() );
-	SDL_Delay(16);
+	for (const auto& n : npcs::npclist) {
+		if (!npcs::inview(n))  continue;
+		auto dst = npcs::getpos(n);
+		SDL_BlitSurface(guy, &src, buf, &dst);
+	}
 }
 

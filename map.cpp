@@ -6,7 +6,7 @@ using namespace std;
 
 namespace map {
 	
-	int width = 0,  height = 0;
+	int width = 0, height = 0, layers = 0;
 	vector<vector<int>> tmap;
 	
 	int loadmap(const std::string& fname) {
@@ -24,7 +24,7 @@ namespace map {
 			s = input.substr(pos1, pos2-pos1);
 			stringstream ss(s);
 			ss >> width;
-//			printf("[%d]\n", width);
+			//printf("[%d]\n", width);
 		}
 		{
 			int pos1 = input.find("height=\"") + 8;
@@ -32,23 +32,25 @@ namespace map {
 			s = input.substr(pos1, pos2-pos1);
 			stringstream ss(s);
 			ss >> height;
-//			printf("[%d]\n", height);
+			//printf("[%d]\n", height);
 		}
 		
 		// get row data 1-3
 		int lpos = 0;
 		vector<string> data;
-		for (int i=0; i<3; i++) {
+		while (true) {
 			string start = "<data encoding=\"csv\">",  end = "</data>";
-			int pos1 = input.find(start, lpos) + start.length();
+			int pos1 = input.find(start, lpos) ;
+			if (pos1 == string::npos)  break;
+			pos1 += start.length();
 			int pos2 = input.find(end, pos1);
 			lpos = pos2;
 			s = input.substr(pos1, pos2-pos1);
 			data.push_back(s);
-//			printf("[%s]\n", s.c_str());
+			//printf("[%s]\n", s.c_str());
 		}
 		
-		// parse to numbers
+		// parse rows to number list
 		tmap = {};
 		for (auto& d : data) {
 			for (char& c : d)
@@ -59,8 +61,9 @@ namespace map {
 			while (ss >> n)
 				tmap.back().push_back(n);
 		}
+		layers = tmap.size();
 		
-		printf("map load OK\n");
+		printf("map load OK:  %d,%d,%d\n", width, height, layers);
 		return 0;
 	}
 
