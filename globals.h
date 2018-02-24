@@ -14,3 +14,7 @@ void flip3x();
 void scalex(SDL_Surface* sf, int sx);
 SDL_Surface* loadbmp(const std::string& fname);
 
+namespace map {
+	extern std::vector<std::vector<int>> tmap;
+	int loadmap(const std::string& fname);
+}

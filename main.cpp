@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
 	SDL_SetVideoMode( 640, 480, 32, SDL_HWSURFACE );
 	buf = SDL_CreateRGBSurface(SDL_SWSURFACE, 160, 144, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 	tileset = loadbmp("rpgindoor1.bmp");
+	map::loadmap("room1.tmx");
 	
 	mainloop();
 	
@@ -47,6 +48,7 @@ int main(int argc, char** argv) {
 int mainloop() {
 	SDL_Event e;
 	int mainloop = 1;
+	int movedir = -1;
 	
 	while (mainloop) {
 		while (SDL_PollEvent(&e))
@@ -54,17 +56,25 @@ int mainloop() {
 				mainloop = 0;
 			else if (e.type == SDL_KEYDOWN) {
 				switch (e.key.keysym.sym) {
-//				case SDLK_UP:     viewport::posy--;  break;
-//				case SDLK_RIGHT:  viewport::posx++;  break;
-//				case SDLK_DOWN:   viewport::posy++;  break;
-//				case SDLK_LEFT:   viewport::posx--;  break;
-				case SDLK_UP:     walk(0);  break;
-				case SDLK_RIGHT:  walk(1);  break;
-				case SDLK_DOWN:   walk(2);  break;
-				case SDLK_LEFT:   walk(3);  break;
+				case SDLK_UP:     movedir = 0;  break;
+				case SDLK_RIGHT:  movedir = 1;  break;
+				case SDLK_DOWN:   movedir = 2;  break;
+				case SDLK_LEFT:   movedir = 3;  break;
 				default:  ;
 				}
 			}
+			else if (e.type == SDL_KEYUP) {
+				switch (e.key.keysym.sym) {
+				case SDLK_UP:     movedir = -1;  break;
+				case SDLK_RIGHT:  movedir = -1;  break;
+				case SDLK_DOWN:   movedir = -1;  break;
+				case SDLK_LEFT:   movedir = -1;  break;
+				default:  ;
+				}
+			}
+			
+		if (movedir >= 0)
+			walk(movedir);
 				
 		paint1();
 		flip3x();
@@ -97,10 +107,6 @@ void walk(int dir) {
 
 void paint1() {
 	SDL_FillRect(buf, NULL, 0x111111ff);
-//	SDL_Rect r = { 16, 16, 16, 16 };
-//	SDL_FillRect(buf, &r, 0x00ff00ff);
-	
-//	SDL_BlitSurface(tileset, &r, buf, &r);
 	
 	for (int y = -1; y <= 9; y++)
 	for (int x = -1; x <= 10; x++) {
