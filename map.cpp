@@ -24,7 +24,7 @@ namespace map {
 			s = input.substr(pos1, pos2-pos1);
 			stringstream ss(s);
 			ss >> width;
-			printf("[%d]\n", width);
+//			printf("[%d]\n", width);
 		}
 		{
 			int pos1 = input.find("height=\"") + 8;
@@ -32,7 +32,7 @@ namespace map {
 			s = input.substr(pos1, pos2-pos1);
 			stringstream ss(s);
 			ss >> height;
-			printf("[%d]\n", height);
+//			printf("[%d]\n", height);
 		}
 		
 		// get row data 1-3
@@ -45,7 +45,7 @@ namespace map {
 			lpos = pos2;
 			s = input.substr(pos1, pos2-pos1);
 			data.push_back(s);
-			printf("[%s]\n", s.c_str());
+//			printf("[%s]\n", s.c_str());
 		}
 		
 		// parse to numbers
@@ -60,6 +60,7 @@ namespace map {
 				tmap.back().push_back(n);
 		}
 		
+		printf("map load OK\n");
 		return 0;
 	}
 
