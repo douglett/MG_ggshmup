@@ -7,7 +7,8 @@
 
 extern SDL_Surface *buf, *tileset, *guy;
 int  mainloop();
-void walk(int dir);
+void walk1(int dir);
+void walk2(int dir);
 void paint1();
 
 // helpers

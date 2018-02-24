@@ -12,8 +12,8 @@ namespace npcs {
 	
 	SDL_Rect getpos(const npc& n) {
 		SDL_Rect r = { 0, 0, 0, 0 };
-		r.x = (n.x - viewport::posx) * 16 + viewport::offx;
-		r.y = (n.y - viewport::posy) * 16 + viewport::offy - 6;
+		r.x = (n.x - viewport::posx) * 16 + viewport::offx + n.px;
+		r.y = (n.y - viewport::posy) * 16 + viewport::offy + n.py - 6;
 		return r;
 	}
 }

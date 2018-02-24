@@ -62,7 +62,7 @@ int mainloop() {
 			}
 			
 		if (movedir >= 0)
-			walk(movedir);
+			walk2(movedir);
 				
 		paint1();
 		flip3x();
@@ -72,7 +72,8 @@ int mainloop() {
 }
 
 
-void walk(int dir) {
+void walk1(int dir) {
+	// walkscreen pixels
 	for (int i=1; i<16; i++) {
 		switch (dir) {
 			case 0:  viewport::offy++;  break;
@@ -83,12 +84,45 @@ void walk(int dir) {
 		paint1();
 		flip3x();
 	}
+	// walkscreen tiles
 	viewport::offy = viewport::offx = 0;
 	switch (dir) {
 		case 0:  viewport::posy--;  break;
 		case 1:  viewport::posx++;  break;
 		case 2:  viewport::posy++;  break;
 		case 3:  viewport::posx--;  break;
+	}
+}
+
+void walk2(int dir) {
+	auto& n =  npcs::npclist[0];
+	int x = n.x, y = n.y;
+	switch (dir) {
+		case 0:  y--;  break;
+		case 1:  x++;  break;
+		case 2:  y++;  break;
+		case 3:  x--;  break;
+	}
+	if (x < 0 || y < 0 || x >= map::width || y >= map::height)  return;
+	if (map::tmap[3][y * map::width + x] > 0)  return;
+	// walk pixels
+	for (int i=1; i<16; i++) {
+		switch (dir) {
+			case 0:  n.py--;  break;
+			case 1:  n.px++;  break;
+			case 2:  n.py++;  break;
+			case 3:  n.px--;  break;
+		}
+		paint1();
+		flip3x();
+	}
+	// walk tile
+	n.px = n.py = 0;
+	switch (dir) {
+		case 0:  n.y--;  break;
+		case 1:  n.x++;  break;
+		case 2:  n.y++;  break;
+		case 3:  n.x--;  break;
 	}
 }
 
@@ -103,7 +137,7 @@ void paint1() {
 		if (viewport::posy + y < 0 || viewport::posy + y >= map::height)  continue;
 		if (viewport::posx + x < 0 || viewport::posx + x >= map::width)  continue;
 		// loop each layer
-		for (int l = 0; l < 3; l++) {	
+		for (int l = 0; l < map::layers-1; l++) {	
 			int t = map::tmap[l][(viewport::posy + y) * map::width + (viewport::posx + x)];
 			if (t == 0)  continue;
 			t--;
