@@ -9,6 +9,7 @@ extern SDL_Surface *buf, *tileset, *guy;
 int  mainloop();
 void walk1(int dir);
 void walk2(int dir);
+void action1();
 void paint1();
 
 // helpers
@@ -27,11 +28,14 @@ namespace map {
 }
 namespace npcs {
 	struct npc {
-		std::string id;
+		std::string id, type;
 		int x, y;
 		int px, py;
+		int dir;
 	};
 	extern std::vector<npc> npclist;
 	int inview(const npc& n);
 	SDL_Rect getpos(const npc& n);
+	SDL_Rect getsrc(const npc& n);
+	npc& getbyid(const std::string& id);
 }

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include <algorithm>
 using namespace std;
 
 SDL_Surface *buf, *tileset, *guy;
@@ -23,8 +24,10 @@ int main(int argc, char** argv) {
 	guy = loadbmp("walker.bmp");
 	map::loadmap("room1.tmx");
 	
-	npcs::npclist.push_back({ "guy", 5, 5, 0, 0 });
-	npcs::npclist.push_back({ "guy", 6, 6, 0, 0 });
+	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
+	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });
+	npcs::npclist.push_back({ "coffee", "coffee", 1, 2 });
+	npcs::npclist.push_back({ "book",   "coffee", 0, 3 });
 	
 	mainloop();
 	
@@ -48,6 +51,7 @@ int mainloop() {
 				case SDLK_RIGHT:  movedir = 1;  break;
 				case SDLK_DOWN:   movedir = 2;  break;
 				case SDLK_LEFT:   movedir = 3;  break;
+				case SDLK_SPACE:  action1();  break;
 				default:  ;
 				}
 			}
@@ -98,13 +102,18 @@ void walk2(int dir) {
 	auto& n =  npcs::npclist[0];
 	int x = n.x, y = n.y;
 	switch (dir) {
-		case 0:  y--;  break;
-		case 1:  x++;  break;
-		case 2:  y++;  break;
-		case 3:  x--;  break;
+		case 0:  y--;  n.dir = 0;  break;
+		case 1:  x++;  n.dir = 1;  break;
+		case 2:  y++;  n.dir = 2;  break;
+		case 3:  x--;  n.dir = 3;  break;
 	}
+	// bounds check
 	if (x < 0 || y < 0 || x >= map::width || y >= map::height)  return;
-	if (map::tmap[3][y * map::width + x] > 0)  return;
+	// collision 1
+	if (map::tmap[map::layers-1][y * map::width + x] > 0)  return;
+	// collision 2
+	for (const auto& nn : npcs::npclist)
+		if (nn.x == x && nn.y == y)  return;
 	// walk pixels
 	for (int i=1; i<16; i++) {
 		switch (dir) {
@@ -127,6 +136,25 @@ void walk2(int dir) {
 }
 
 
+void action1() {
+	auto& n = npcs::getbyid("guy");
+	int x = n.x, y = n.y;
+	switch (n.dir) {
+		case 0:  y--;  break;
+		case 1:  x++;  break;
+		case 2:  y++;  break;
+		case 3:  x--;  break;
+	}
+	for (const auto& nn : npcs::npclist)
+		if (nn.x == x && nn.y == y)
+			printf("[[%s]]\n", nn.id.c_str());
+}
+
+
+static int npcsort(const npcs::npc& l, const npcs::npc& r) {
+	return (l.y < r.y);
+}
+
 void paint1() {
 	// cls
 	SDL_FillRect(buf, NULL, 0x111111ff);
@@ -147,9 +175,11 @@ void paint1() {
 		}
 	}
 	
-	SDL_Rect src = { 0, 18*2, 16, 18 };
-	for (const auto& n : npcs::npclist) {
+	auto nls = npcs::npclist;
+	sort(nls.begin(), nls.end(), npcsort);
+	for (const auto& n : nls) {
 		if (!npcs::inview(n))  continue;
+		auto src = npcs::getsrc(n);
 		auto dst = npcs::getpos(n);
 		SDL_BlitSurface(guy, &src, buf, &dst);
 	}
