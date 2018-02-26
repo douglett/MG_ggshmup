@@ -2,10 +2,11 @@
 #include <algorithm>
 using namespace std;
 
-SDL_Surface *buf, *tileset, *guy;
+SDL_Surface *buf, *tileset, *guy, *qbfont, *overlay;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
+	int dialogue = 1;
 }
 
 
@@ -22,6 +23,9 @@ int main(int argc, char** argv) {
 	buf = SDL_CreateRGBSurface(SDL_SWSURFACE, 160, 144, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 	tileset = loadbmp("rpgindoor1.bmp");
 	guy = loadbmp("walker.bmp");
+	qbfont = loadbmp("qbfont.bmp");
+	overlay = mksurface(140, 40);
+	drawdialogue({ "test1", "RPG proto sometxt" });
 	map::loadmap("room1.tmx");
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
@@ -174,7 +178,7 @@ void paint1() {
 			SDL_BlitSurface(tileset, &src, buf, &dst);
 		}
 	}
-	
+	// draw npcs
 	auto nls = npcs::npclist;
 	sort(nls.begin(), nls.end(), npcsort);
 	for (const auto& n : nls) {
@@ -183,5 +187,39 @@ void paint1() {
 		auto dst = npcs::getpos(n);
 		SDL_BlitSurface(guy, &src, buf, &dst);
 	}
+	qbprint(buf, 1, 1, "RPG proto");  // test
+	// draw dialogue text
+	if (viewport::dialogue) {
+		SDL_Rect dst = { 10, 100, 0, 0 };
+		SDL_BlitSurface(overlay, NULL, buf, &dst);
+	}
+}
+
+void drawdialogue(const std::vector<std::string>& vs) {
+	// make background
+	SDL_Rect dst = { 1, 1, uint16_t(overlay->w-2), uint16_t(overlay->h-2) };
+	SDL_FillRect(overlay, NULL, 0xffffffff);
+	SDL_FillRect(overlay, &dst, 0xff00ffff);
+	// draw text
+	for (int i=0; i<min((int)vs.size(), 3); i++)
+		qbprint(overlay, 3, 3+8*i, vs[i]);
+//	qbprint(overlay, 3, 3+8*0, "RPG proto");
+//	qbprint(overlay, 3, 3+8*1, "RPG proto sometxt");
+//	qbprint(overlay, 3, 3+8*2, "RPG proto sometxt");
+	qbprint(overlay, 129, 31, string()+char(31));
+	// replace pink with transparent blue
+	uint32_t* data = (uint32_t*)overlay->pixels;
+	for (int i=0; i<overlay->w * overlay->h; i++)
+		if (data[i] == 0xff00ffff)  data[i] = 0x0000ff55;
+}
+
+void flip3x() {
+	// scale backbuffer and flip screen
+	SDL_Rect bufpos = { 24, 8, 0, 0 };
+	SDL_FillRect( SDL_GetVideoSurface(), NULL, 0x0 );
+	SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
+	scalex( SDL_GetVideoSurface(), 3 );
+	SDL_Flip( SDL_GetVideoSurface() );
+	SDL_Delay(16);
 }
 

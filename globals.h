@@ -5,21 +5,25 @@
 #include <vector>
 #include <SDL/SDL.h>
 
-extern SDL_Surface *buf, *tileset, *guy;
+extern SDL_Surface *buf, *tileset, *guy, *qbfont;
 int  mainloop();
 void walk1(int dir);
 void walk2(int dir);
 void action1();
 void paint1();
+void drawdialogue(const std::vector<std::string>& vs);
+void flip3x();
 
 // helpers
 SDL_Surface* loadbmp(const std::string& fname);
+SDL_Surface* mksurface(int w, int h);
 void scalex(SDL_Surface* sf, int sx);
-void flip3x();
+void qbprint(SDL_Surface* sf, int x, int y, const std::string& s);
 
 namespace viewport {
 	extern int posx, posy;
 	extern int offx, offy;
+	extern int dialogue;
 }
 namespace map {
 	extern int width, height, layers;

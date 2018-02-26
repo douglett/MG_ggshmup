@@ -15,6 +15,11 @@ SDL_Surface* loadbmp(const std::string& fname) {
 	return t2;
 }
 
+SDL_Surface* mksurface(int w, int h) {
+	return SDL_CreateRGBSurface(buf->flags, w, h, buf->format->BitsPerPixel, 
+		buf->format->Rmask, buf->format->Gmask, buf->format->Bmask, buf->format->Amask);
+}
+
 void scalex(SDL_Surface* sf, int sx) {
 	if (sf == NULL)  return;
 	assert(sx >= 1 && sx <= 5);
@@ -33,13 +38,16 @@ void scalex(SDL_Surface* sf, int sx) {
 	SDL_UnlockSurface(sf);
 }
 
-void flip3x() {
-	// scale backbuffer and flip screen
-	SDL_Rect bufpos = { 24, 8, 0, 0 };
-	SDL_FillRect( SDL_GetVideoSurface(), NULL, 0x0 );
-	SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
-	scalex( SDL_GetVideoSurface(), 3 );
-	SDL_Flip( SDL_GetVideoSurface() );
-	SDL_Delay(16);
+void qbprint(SDL_Surface* sf, int x, int y, const std::string& s) {
+	assert(sf != NULL);
+	const int pitch = qbfont->w/8;
+	SDL_Rect src = { 0, 0, 8, 8 },  dst = { 0, 0, 8, 8 };
+	for (int i=0; i<s.size(); i++) {
+		src.x = s[i] % pitch * 8;
+		src.y = s[i] / pitch * 8;
+		dst.x = x + i*8;
+		dst.y = y;
+		SDL_BlitSurface(qbfont, &src, sf, &dst);
+	}
 }
 
