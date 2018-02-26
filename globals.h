@@ -10,6 +10,7 @@ int  mainloop();
 void walk1(int dir);
 void walk2(int dir);
 void action1();
+void waitactionloop();
 void paint1();
 void drawdialogue(const std::vector<std::string>& vs);
 void flip3x();

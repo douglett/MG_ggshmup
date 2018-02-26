@@ -6,7 +6,7 @@ SDL_Surface *buf, *tileset, *guy, *qbfont, *overlay;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
-	int dialogue = 1;
+	int dialogue = 0;
 }
 
 
@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 	guy = loadbmp("walker.bmp");
 	qbfont = loadbmp("qbfont.bmp");
 	overlay = mksurface(140, 40);
-	drawdialogue({ "test1", "RPG proto sometxt" });
+//	drawdialogue({ "test1", "RPG proto sometxt" });
 	map::loadmap("room1.tmx");
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
@@ -149,9 +149,54 @@ void action1() {
 		case 2:  y++;  break;
 		case 3:  x--;  break;
 	}
-	for (const auto& nn : npcs::npclist)
-		if (nn.x == x && nn.y == y)
-			printf("[[%s]]\n", nn.id.c_str());
+	for (const auto& nn : npcs::npclist) {
+		if (nn.x != x || nn.y != y)  continue;
+		printf("[[%s]]\n", nn.id.c_str());  // show id
+		if (nn.id == "npc1") {
+			drawdialogue({ "hello, how are", "you?" });
+			viewport::dialogue = 1;
+			waitactionloop();
+			viewport::dialogue = 0;
+		}
+		else if (nn.id == "coffee") {
+			drawdialogue({ "you sip some", "coffee.", "mmm!" });
+			viewport::dialogue = 1;
+			waitactionloop();
+			viewport::dialogue = 0;
+		}
+		else if (nn.id == "book") {
+			drawdialogue({ "\"to be or not to", "be;\"", "a gripping read!" });
+			viewport::dialogue = 1;
+			waitactionloop();
+			viewport::dialogue = 0;
+		}
+		break;
+	}
+}
+
+
+void waitactionloop() {
+	int looping = 1;
+	int anim = 0;
+	SDL_Event e;
+	
+	while (looping) {
+		while (SDL_PollEvent(&e))
+			switch (e.type) {
+				case SDL_QUIT:  exit(0);
+				case SDL_KEYDOWN:
+					switch (e.key.keysym.sym) {
+						case SDLK_SPACE:  looping = 0;  break;
+						default:  break;
+					}
+					break;
+			}
+		// redraw
+		paint1();
+		anim = (anim+1) % 60;
+		qbprint(buf, 139, 131+anim/30, string()+char(31));
+		flip3x();
+	}
 }
 
 
@@ -203,10 +248,8 @@ void drawdialogue(const std::vector<std::string>& vs) {
 	// draw text
 	for (int i=0; i<min((int)vs.size(), 3); i++)
 		qbprint(overlay, 3, 3+8*i, vs[i]);
-//	qbprint(overlay, 3, 3+8*0, "RPG proto");
-//	qbprint(overlay, 3, 3+8*1, "RPG proto sometxt");
-//	qbprint(overlay, 3, 3+8*2, "RPG proto sometxt");
-	qbprint(overlay, 129, 31, string()+char(31));
+	// down button
+//	qbprint(overlay, 129, 31, string()+char(31));
 	// replace pink with transparent blue
 	uint32_t* data = (uint32_t*)overlay->pixels;
 	for (int i=0; i<overlay->w * overlay->h; i++)
