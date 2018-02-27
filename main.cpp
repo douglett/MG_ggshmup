@@ -2,11 +2,10 @@
 #include <algorithm>
 using namespace std;
 
-SDL_Surface *buf, *tileset, *guy, *qbfont, *overlay;
+SDL_Surface *buf, *tileset, *guy, *qbfont;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
-	int dialogue = 0;
 }
 
 
@@ -24,8 +23,7 @@ int main(int argc, char** argv) {
 	tileset = loadbmp("rpgindoor1.bmp");
 	guy = loadbmp("walker.bmp");
 	qbfont = loadbmp("qbfont.bmp");
-	overlay = mksurface(140, 40);
-//	drawdialogue({ "test1", "RPG proto sometxt" });
+	menus::init();
 	map::loadmap("room1.tmx");
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
@@ -56,6 +54,7 @@ int mainloop() {
 				case SDLK_DOWN:   movedir = 2;  break;
 				case SDLK_LEFT:   movedir = 3;  break;
 				case SDLK_SPACE:  action1();  break;
+				case 'i':         menus::showinv();  break;
 				default:  ;
 				}
 			}
@@ -103,7 +102,7 @@ void walk1(int dir) {
 }
 
 void walk2(int dir) {
-	auto& n =  npcs::npclist[0];
+	auto& n =  npcs::getbyid("guy");
 	int x = n.x, y = n.y;
 	switch (dir) {
 		case 0:  y--;  n.dir = 0;  break;
@@ -153,54 +152,21 @@ void action1() {
 		if (nn.x != x || nn.y != y)  continue;
 		printf("[[%s]]\n", nn.id.c_str());  // show id
 		if (nn.id == "npc1") {
-			drawdialogue({ "hello, how are", "you?" });
-			viewport::dialogue = 1;
-			waitactionloop();
-			viewport::dialogue = 0;
+			menus::dialogue({ "hello, how are", "you?" });
+			menus::dialogue({ "i hope you are", "well!" });
 		}
 		else if (nn.id == "coffee") {
-			drawdialogue({ "you sip some", "coffee.", "mmm!" });
-			viewport::dialogue = 1;
-			waitactionloop();
-			viewport::dialogue = 0;
+			menus::dialogue({ "you sip some", "coffee.", "mmm!" });
 		}
 		else if (nn.id == "book") {
-			drawdialogue({ "\"to be or not to", "be;\"", "a gripping read!" });
-			viewport::dialogue = 1;
-			waitactionloop();
-			viewport::dialogue = 0;
+			menus::dialogue({ "\"to be or not to", "be;\"", "a gripping read!" });
 		}
 		break;
 	}
 }
 
 
-void waitactionloop() {
-	int looping = 1;
-	int anim = 0;
-	SDL_Event e;
-	
-	while (looping) {
-		while (SDL_PollEvent(&e))
-			switch (e.type) {
-				case SDL_QUIT:  exit(0);
-				case SDL_KEYDOWN:
-					switch (e.key.keysym.sym) {
-						case SDLK_SPACE:  looping = 0;  break;
-						default:  break;
-					}
-					break;
-			}
-		// redraw
-		paint1();
-		anim = (anim+1) % 60;
-		qbprint(buf, 139, 131+anim/30, string()+char(31));
-		flip3x();
-	}
-}
-
-
-static int npcsort(const npcs::npc& l, const npcs::npc& r) {
+static bool npcsort(const npcs::npc& l, const npcs::npc& r) {
 	return (l.y < r.y);
 }
 
@@ -232,28 +198,7 @@ void paint1() {
 		auto dst = npcs::getpos(n);
 		SDL_BlitSurface(guy, &src, buf, &dst);
 	}
-	qbprint(buf, 1, 1, "RPG proto");  // test
-	// draw dialogue text
-	if (viewport::dialogue) {
-		SDL_Rect dst = { 10, 100, 0, 0 };
-		SDL_BlitSurface(overlay, NULL, buf, &dst);
-	}
-}
-
-void drawdialogue(const std::vector<std::string>& vs) {
-	// make background
-	SDL_Rect dst = { 1, 1, uint16_t(overlay->w-2), uint16_t(overlay->h-2) };
-	SDL_FillRect(overlay, NULL, 0xffffffff);
-	SDL_FillRect(overlay, &dst, 0xff00ffff);
-	// draw text
-	for (int i=0; i<min((int)vs.size(), 3); i++)
-		qbprint(overlay, 3, 3+8*i, vs[i]);
-	// down button
-//	qbprint(overlay, 129, 31, string()+char(31));
-	// replace pink with transparent blue
-	uint32_t* data = (uint32_t*)overlay->pixels;
-	for (int i=0; i<overlay->w * overlay->h; i++)
-		if (data[i] == 0xff00ffff)  data[i] = 0x0000ff55;
+	qbprint(buf, 1, 1, "RPG proto");  // test info
 }
 
 void flip3x() {

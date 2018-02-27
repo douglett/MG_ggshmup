@@ -10,9 +10,7 @@ int  mainloop();
 void walk1(int dir);
 void walk2(int dir);
 void action1();
-void waitactionloop();
 void paint1();
-void drawdialogue(const std::vector<std::string>& vs);
 void flip3x();
 
 // helpers
@@ -24,7 +22,6 @@ void qbprint(SDL_Surface* sf, int x, int y, const std::string& s);
 namespace viewport {
 	extern int posx, posy;
 	extern int offx, offy;
-	extern int dialogue;
 }
 namespace map {
 	extern int width, height, layers;
@@ -43,4 +40,10 @@ namespace npcs {
 	SDL_Rect getpos(const npc& n);
 	SDL_Rect getsrc(const npc& n);
 	npc& getbyid(const std::string& id);
+}
+
+namespace menus {
+	int init();
+	void dialogue(const std::vector<std::string>& lines);
+	void showinv();
 }
