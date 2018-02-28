@@ -2,7 +2,7 @@
 #include <algorithm>
 using namespace std;
 
-SDL_Surface *buf, *tileset, *guy, *qbfont;
+SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
 	buf = SDL_CreateRGBSurface(SDL_SWSURFACE, 160, 144, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 	tileset = loadbmp("rpgindoor1.bmp");
 	guy = loadbmp("walker.bmp");
+	guyshadow = createshadow();
 	qbfont = loadbmp("qbfont.bmp");
 	menus::init();
 	map::loadmap("room1.tmx");
@@ -35,6 +36,13 @@ int main(int argc, char** argv) {
 	
 	SDL_Quit();
 	return 0;	
+}
+
+SDL_Surface* createshadow() {
+	SDL_Surface* sf = mksurface(16, 16);
+	for (auto& r : vector<SDL_Rect>{ {2, 10, 12, 2}, {3, 9, 10, 4}, {4, 8, 8, 6} })
+		SDL_FillRect(sf, &r, 0x00000088);
+	return sf;
 }
 
 
@@ -197,6 +205,8 @@ void paint1() {
 		if (!npcs::inview(n))  continue;
 		auto src = npcs::getsrc(n);
 		auto dst = npcs::getpos(n);
+		SDL_BlitSurface(guyshadow, NULL, buf, &dst);
+		dst.y -= 6;
 		SDL_BlitSurface(guy, &src, buf, &dst);
 	}
 	qbprint(buf, 1, 1, "RPG proto");  // test info

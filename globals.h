@@ -5,8 +5,9 @@
 #include <vector>
 #include <SDL/SDL.h>
 
-extern SDL_Surface *buf, *tileset, *guy, *qbfont;
+extern SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
 int  mainloop();
+SDL_Surface* createshadow();
 void walk1(int dir);
 void walk2(int dir);
 void action1();
