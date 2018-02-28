@@ -57,46 +57,9 @@ namespace menus {
 			flip3x();
 		}
 	}
-
-	static void showinv_items() {
-		// init
-		SDL_Surface* sf = clonesurface(buf);
-		int looping = 1;
-		int arrow = 0;
-		vector<string> mitems = { "back" };
-		// action loop
-		while (looping) {
-			// main event loop
-			SDL_Event e;
-			while (SDL_PollEvent(&e))
-				switch (e.type) {
-					case SDL_QUIT:  exit(0);
-					case SDL_KEYDOWN:
-						switch (e.key.keysym.sym) {
-							case SDLK_UP:     arrow = max(arrow-1, 0);  break;
-							case SDLK_DOWN:   arrow = min(arrow+1, int(mitems.size()-1));  break;
-							case SDLK_SPACE:
-								if      (mitems[arrow] == "back" )  looping = 0;
-								break;
-							default:  break;
-						}
-						break;
-				}
-			// redraw
-			SDL_BlitSurface(sf, NULL, buf, NULL);
-			SDL_Rect dst = { 55+2, 10, 100, 120 };
-			string s;
-			for (int i=0; i<mitems.size(); i++)
-				s += (i == arrow ? char(16) : ' ') + mitems[i] + "\n";
-			txtbox(dst, s);
-			// display
-			flip3x();
-		}
-		SDL_FreeSurface(sf);
-	}
 	
-	string showlist(SDL_Rect mbox, const std::vector<std::string>& mitems) {
-		assert(list.size() && list.back() == "back");
+	std::string showlist(SDL_Rect mbox, const std::vector<std::string>& mitems) {
+		assert(mitems.size() && mitems.back() == "back");
 		// init
 		SDL_Surface* sf = clonesurface(buf);
 		int looping = 1;
@@ -131,41 +94,19 @@ namespace menus {
 	}
 	
 	void showinv() {
-		// init
-		int looping = 1;
-		int arrow = 0;
-		//int anim = 0;
 		vector<string> mitems = { "items", "quit", "back" };
-		// action loop
-		while (looping) {
-			// main event loop
-			SDL_Event e;
-			while (SDL_PollEvent(&e))
-				switch (e.type) {
-					case SDL_QUIT:  exit(0);
-					case SDL_KEYDOWN:
-						switch (e.key.keysym.sym) {
-							case SDLK_UP:     arrow = max(arrow-1, 0);  break;
-							case SDLK_DOWN:   arrow = min(arrow+1, int(mitems.size()-1));  break;
-							case SDLK_SPACE:
-								if      (mitems[arrow] == "back" )  looping = 0;
-								else if (mitems[arrow] == "quit" )  exit(0);
-								else if (mitems[arrow] == "items")  showinv_items();
-								break;
-							default:  break;
-						}
-						break;
-				}
-			// redraw
+		while (true) {
 			paint1();
-			// first menu
-			SDL_Rect dst = { 2, 10, uint16_t(8*6 + 5), uint16_t(8*mitems.size() + 6) };
-			string s;
-			for (int i=0; i<mitems.size(); i++)
-				s += (i == arrow ? char(16) : ' ') + mitems[i] + "\n";
-			txtbox(dst, s);
-			// display
-			flip3x();
+			auto item = showlist({ 2, 10, 52, 29 }, mitems);
+			if      (item == "back" )  break;
+			else if (item == "quit" )  exit(0);
+			else if (item == "items")  {
+				while (true) {
+					vector<string> mitems = { "back" };
+					auto item = showlist({ 55+2, 10, 100, 120 }, mitems);
+					if      (item == "back" )  break;
+				}
+			}
 		}
 	}
 	

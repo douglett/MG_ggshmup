@@ -48,5 +48,6 @@ namespace menus {
 	int init();
 	void txtbox(SDL_Rect dst, const std::string& txt);
 	void dialogue(const std::string& str);
+	std::string showlist(SDL_Rect mbox, const std::vector<std::string>& mitems);
 	void showinv();
 }
