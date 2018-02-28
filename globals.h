@@ -16,8 +16,10 @@ void flip3x();
 // helpers
 SDL_Surface* loadbmp(const std::string& fname);
 SDL_Surface* mksurface(int w, int h);
+SDL_Surface* clonesurface(SDL_Surface* sf);
 void scalex(SDL_Surface* sf, int sx);
 void qbprint(SDL_Surface* sf, int x, int y, const std::string& s);
+std::string join(const std::vector<std::string>& vs, const std::string& glue);
 
 namespace viewport {
 	extern int posx, posy;

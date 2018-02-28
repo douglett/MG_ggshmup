@@ -56,13 +56,47 @@ namespace menus {
 			flip3x();
 		}
 	}
+
+	static void showinv_items() {
+		// init
+		SDL_Surface* sf = clonesurface(buf);
+		int looping = 1;
+		int arrow = 0;
+		vector<string> mitems = { "back" };
+		// action loop
+		while (looping) {
+			// main event loop
+			SDL_Event e;
+			while (SDL_PollEvent(&e))
+				switch (e.type) {
+					case SDL_QUIT:  exit(0);
+					case SDL_KEYDOWN:
+						switch (e.key.keysym.sym) {
+							case SDLK_UP:     arrow = max(arrow-1, 0);  break;
+							case SDLK_DOWN:   arrow = min(arrow+1, int(mitems.size()-1));  break;
+							case SDLK_SPACE:
+								if      (mitems[arrow] == "back" )  looping = 0;
+								break;
+							default:  break;
+						}
+						break;
+				}
+			// redraw
+			SDL_BlitSurface(sf, NULL, buf, NULL);
+			SDL_Rect dst = { 55+2, 10, 100, 120 };
+			string s;
+			for (int i=0; i<mitems.size(); i++)
+				s += (i == arrow ? char(16) : ' ') + mitems[i] + "\n";
+			txtbox(dst, s);
+			// display
+			flip3x();
+		}
+		SDL_FreeSurface(sf);
+	}
 	
-//	static std::string join(const std::vector<std::string>& vs, const std::string& glue) {
-//		string s;
-//		for (int i=0; i<vs.size(); i++)
-//			s += ( i == 0 ? "" : glue ) + vs[i];
-//		return s;
-//	}
+	string showlist(SDL_Rect r, const std::vector<std::string>& list) {
+		return "";
+	}
 	
 	void showinv() {
 		// init
@@ -84,7 +118,7 @@ namespace menus {
 							case SDLK_SPACE:
 								if      (mitems[arrow] == "back" )  looping = 0;
 								else if (mitems[arrow] == "quit" )  exit(0);
-								else if (mitems[arrow] == "items")  ;
+								else if (mitems[arrow] == "items")  showinv_items();
 								break;
 							default:  break;
 						}
@@ -92,14 +126,12 @@ namespace menus {
 				}
 			// redraw
 			paint1();
+			// first menu
 			SDL_Rect dst = { 2, 10, uint16_t(8*6 + 5), uint16_t(8*mitems.size() + 6) };
 			string s;
 			for (int i=0; i<mitems.size(); i++)
 				s += (i == arrow ? char(16) : ' ') + mitems[i] + "\n";
 			txtbox(dst, s);
-			// flashing arrow
-			//anim = (anim+1) % 60;
-			//qbprint(buf, dst.x+3 + anim/30, dst.y+arrow*8+2, string()+char(16));
 			// display
 			flip3x();
 		}

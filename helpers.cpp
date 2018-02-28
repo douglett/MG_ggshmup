@@ -20,8 +20,15 @@ SDL_Surface* mksurface(int w, int h) {
 		buf->format->Rmask, buf->format->Gmask, buf->format->Bmask, buf->format->Amask);
 }
 
+SDL_Surface* clonesurface(SDL_Surface* sf) {
+	assert(sf != NULL);
+	SDL_Surface* sfnew = mksurface(sf->w, sf->h);
+	SDL_BlitSurface(sf, NULL, sfnew, NULL);
+	return sfnew;
+}
+
 void scalex(SDL_Surface* sf, int sx) {
-	if (sf == NULL)  return;
+	assert(sf != NULL);
 	assert(sx >= 1 && sx <= 5);
 	assert(sf->format->BitsPerPixel == 32);
 	// init
@@ -54,3 +61,9 @@ void qbprint(SDL_Surface* sf, int x, int y, const std::string& s) {
 	}
 }
 
+std::string join(const std::vector<std::string>& vs, const std::string& glue) {
+	string s;
+	for (int i=0; i<vs.size(); i++)
+		s += ( i == 0 ? "" : glue ) + vs[i];
+	return s;
+}
