@@ -1,4 +1,5 @@
 #include "globals.h"
+#include <cassert>
 using namespace std;
 
 namespace menus {
@@ -94,8 +95,39 @@ namespace menus {
 		SDL_FreeSurface(sf);
 	}
 	
-	string showlist(SDL_Rect r, const std::vector<std::string>& list) {
-		return "";
+	string showlist(SDL_Rect mbox, const std::vector<std::string>& mitems) {
+		assert(list.size() && list.back() == "back");
+		// init
+		SDL_Surface* sf = clonesurface(buf);
+		int looping = 1;
+		int arrow = 0;
+		// action loop
+		while (looping) {
+			// main event loop
+			SDL_Event e;
+			while (SDL_PollEvent(&e))
+				switch (e.type) {
+					case SDL_QUIT:  exit(0);
+					case SDL_KEYDOWN:
+						switch (e.key.keysym.sym) {
+							case SDLK_UP:     arrow = max(arrow-1, 0);  break;
+							case SDLK_DOWN:   arrow = min(arrow+1, int(mitems.size()-1));  break;
+							case SDLK_SPACE:  looping = 0;  break;
+							default:  break;
+						}
+						break;
+				}
+			// redraw
+			SDL_BlitSurface(sf, NULL, buf, NULL);
+			string s;
+			for (int i=0; i<mitems.size(); i++)
+				s += (i == arrow ? char(16) : ' ') + mitems[i] + "\n";
+			txtbox(mbox, s);
+			// display
+			flip3x();
+		}
+		SDL_FreeSurface(sf);
+		return mitems[arrow];
 	}
 	
 	void showinv() {
