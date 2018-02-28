@@ -44,6 +44,7 @@ namespace npcs {
 
 namespace menus {
 	int init();
-	void dialogue(const std::vector<std::string>& lines);
+	void txtbox(SDL_Rect dst, const std::string& txt);
+	void dialogue(const std::string& str);
 	void showinv();
 }

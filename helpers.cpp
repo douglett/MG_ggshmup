@@ -41,13 +41,16 @@ void scalex(SDL_Surface* sf, int sx) {
 void qbprint(SDL_Surface* sf, int x, int y, const std::string& s) {
 	assert(sf != NULL);
 	const int pitch = qbfont->w/8;
-	SDL_Rect src = { 0, 0, 8, 8 },  dst = { 0, 0, 8, 8 };
+	SDL_Rect src = { 0, 0, 8, 8 },  dst = { int16_t(x), int16_t(y), 8, 8 };
 	for (int i=0; i<s.size(); i++) {
+		if (s[i] == '\n') {
+			dst.x = x, dst.y += 8; 
+			continue;
+		}
 		src.x = s[i] % pitch * 8;
 		src.y = s[i] / pitch * 8;
-		dst.x = x + i*8;
-		dst.y = y;
 		SDL_BlitSurface(qbfont, &src, sf, &dst);
+		dst.x += 8;
 	}
 }
 

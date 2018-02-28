@@ -54,6 +54,7 @@ int mainloop() {
 				case SDLK_DOWN:   movedir = 2;  break;
 				case SDLK_LEFT:   movedir = 3;  break;
 				case SDLK_SPACE:  action1();  break;
+				case 's':
 				case 'i':         menus::showinv();  break;
 				default:  ;
 				}
@@ -152,14 +153,14 @@ void action1() {
 		if (nn.x != x || nn.y != y)  continue;
 		printf("[[%s]]\n", nn.id.c_str());  // show id
 		if (nn.id == "npc1") {
-			menus::dialogue({ "hello, how are", "you?" });
-			menus::dialogue({ "i hope you are", "well!" });
+			menus::dialogue("hello, how are\nyou?");
+			menus::dialogue("i hope you are\nwell!");
 		}
 		else if (nn.id == "coffee") {
-			menus::dialogue({ "you sip some", "coffee.", "mmm!" });
+			menus::dialogue("you sip some\ncoffee.\nmmm!");
 		}
 		else if (nn.id == "book") {
-			menus::dialogue({ "\"to be or not to", "be;\"", "a gripping read!" });
+			menus::dialogue("\"to be or not to\nbe;\"\na gripping read!");
 		}
 		break;
 	}
