@@ -12,7 +12,7 @@ namespace viewport {
 		auto& n = npcs::getbyid(follow);
 		posx = n.x - 4;
 		posy = n.y - 4;
-		offx = -n.px;
+		offx = 7 - n.px;
 		offy = -n.py;
 	}
 }
@@ -195,7 +195,7 @@ void paint1() {
 	const int tswidth = tileset->w / 16;
 	// loop each axis
 	for (int y = -1; y <= 9; y++)
-	for (int x = -1; x <= 10; x++) {
+	for (int x = -2; x <= 10; x++) {
 		if (viewport::posy + y < 0 || viewport::posy + y >= map::height)  continue;
 		if (viewport::posx + x < 0 || viewport::posx + x >= map::width)  continue;
 		// loop each layer
