@@ -25,6 +25,8 @@ std::string join(const std::vector<std::string>& vs, const std::string& glue);
 namespace viewport {
 	extern int posx, posy;
 	extern int offx, offy;
+	extern std::string follow;
+	void recenter();
 }
 namespace map {
 	extern int width, height, layers;

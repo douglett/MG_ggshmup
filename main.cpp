@@ -6,6 +6,15 @@ SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
+	std::string follow = "guy";
+	void recenter() {
+		if (follow == "")  return;
+		auto& n = npcs::getbyid(follow);
+		posx = n.x - 4;
+		posy = n.y - 4;
+		offx = -n.px;
+		offy = -n.py;
+	}
 }
 
 
@@ -79,7 +88,7 @@ int mainloop() {
 			
 		if (movedir >= 0)
 			walk2(movedir);
-				
+		viewport::recenter();		
 		paint1();
 		flip3x();
 	}
@@ -134,6 +143,7 @@ void walk2(int dir) {
 			case 2:  n.py++;  break;
 			case 3:  n.px--;  break;
 		}
+		viewport::recenter();
 		paint1();
 		flip3x();
 	}
