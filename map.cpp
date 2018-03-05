@@ -75,7 +75,7 @@ namespace map {
 			"#..#.......#",
 			"#..........#",
 			"#####..#####",
-			"#..........#",
+			"#/........|#",
 			"#..........#",
 			"#..........#",
 			"#####DD#####",
@@ -97,6 +97,8 @@ namespace map {
 			case '#':  t =  8;  break;
 			case 'T':  t =  9;  break;
 			case 'D':  t = 10;  break;
+			case '/':  t = 11;  break;
+			case '|':  t = 12;  break;
 			}
 			k = (t >= 4);
 			tmap[0].push_back(t+1);
