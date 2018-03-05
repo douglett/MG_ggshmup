@@ -192,7 +192,6 @@ static bool npcsort(const npcs::npc& l, const npcs::npc& r) {
 void paint1() {
 	// cls
 	SDL_FillRect(buf, NULL, 0x111111ff);
-	const int tswidth = tileset->w / 16;
 	// loop each axis
 	for (int y = -1; y <= 9; y++)
 	for (int x = -2; x <= 10; x++) {
@@ -200,13 +199,8 @@ void paint1() {
 		if (viewport::posx + x < 0 || viewport::posx + x >= map::width)  continue;
 		// loop each layer
 		for (int l = 0; l < map::layers-1; l++) {	
-//			int t = map::tmap[l][(viewport::posy + y) * map::width + (viewport::posx + x)];
-//			if (t == 0)  continue;
-//			t--;
-//			SDL_Rect src = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
 			auto srcimg = map::gettile(l, viewport::posx + x, viewport::posy + y);
 			SDL_Rect dst = { int16_t(x*16 + viewport::offx), int16_t(y*16 + viewport::offy), 0, 0 };
-//			SDL_BlitSurface(tileset, &src, buf, &dst);
 			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
 		}
 	}
