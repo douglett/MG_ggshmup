@@ -5,6 +5,10 @@
 #include <vector>
 #include <SDL/SDL.h>
 
+// types
+struct SrcImg { SDL_Rect r; SDL_Surface* sf; };
+
+// main
 extern SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
 int  mainloop();
 SDL_Surface* createshadow();
@@ -33,6 +37,8 @@ namespace map {
 	extern std::vector<std::vector<int>> tmap;
 	int loadmap(const std::string& fname);
 	int loadascii(const std::string& fname);
+	int collide(int x, int y);
+	SrcImg gettile(int l, int x, int y);
 }
 namespace npcs {
 	struct npc {

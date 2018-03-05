@@ -107,5 +107,20 @@ namespace map {
 		layers = tmap.size();
 		return 0;
 	}
+	
+	int collide(int x, int y) {
+		if (x < 0 || y < 0 || x >= width || y >= height)  return 1;  // bounds check
+		if (tmap[layers-1][y * width + x] > 0)  return 1;  // top layer collision
+		return 0;
+	}
+	
+	SrcImg gettile(int l, int x, int y) {
+		const int tswidth = tileset->w / 16;
+		int t = map::tmap[l][y * map::width + x];
+		if (t == 0)  return { {0}, NULL };
+		t--;
+		SDL_Rect r = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
+		return { r, tileset };
+	}
 
 } // end map

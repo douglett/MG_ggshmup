@@ -130,10 +130,8 @@ void walk2(int dir) {
 		case 2:  y++;  n.dir = 2;  break;
 		case 3:  x--;  n.dir = 3;  break;
 	}
-	// bounds check
-	if (x < 0 || y < 0 || x >= map::width || y >= map::height)  return;
 	// collision 1
-	if (map::tmap[map::layers-1][y * map::width + x] > 0)  return;
+	if (map::collide(x, y))  return;
 	// collision 2
 	for (const auto& nn : npcs::npclist)
 		if (nn.x == x && nn.y == y)  return;
@@ -202,12 +200,14 @@ void paint1() {
 		if (viewport::posx + x < 0 || viewport::posx + x >= map::width)  continue;
 		// loop each layer
 		for (int l = 0; l < map::layers-1; l++) {	
-			int t = map::tmap[l][(viewport::posy + y) * map::width + (viewport::posx + x)];
-			if (t == 0)  continue;
-			t--;
-			SDL_Rect src = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
+//			int t = map::tmap[l][(viewport::posy + y) * map::width + (viewport::posx + x)];
+//			if (t == 0)  continue;
+//			t--;
+//			SDL_Rect src = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
+			auto srcimg = map::gettile(l, viewport::posx + x, viewport::posy + y);
 			SDL_Rect dst = { int16_t(x*16 + viewport::offx), int16_t(y*16 + viewport::offy), 0, 0 };
-			SDL_BlitSurface(tileset, &src, buf, &dst);
+//			SDL_BlitSurface(tileset, &src, buf, &dst);
+			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
 		}
 	}
 	// draw npcs
