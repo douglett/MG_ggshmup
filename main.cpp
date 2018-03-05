@@ -29,12 +29,14 @@ int main(int argc, char** argv) {
 	
 	SDL_SetVideoMode( 640, 480, 32, SDL_HWSURFACE );
 	buf = SDL_CreateRGBSurface(SDL_SWSURFACE, 160, 144, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-	tileset = loadbmp("rpgindoor1.bmp");
+	menus::init();
+	qbfont = loadbmp("qbfont.bmp");
 	guy = loadbmp("walker.bmp");
 	guyshadow = createshadow();
-	qbfont = loadbmp("qbfont.bmp");
-	menus::init();
-	map::loadmap("room1.tmx");
+//	tileset = loadbmp("rpgindoor1.bmp");
+//	map::loadmap("room1.tmx");
+	tileset = loadbmp("hicontile.bmp");
+	map::loadascii("mil");
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
 	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });

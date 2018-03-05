@@ -66,5 +66,44 @@ namespace map {
 		printf("map load OK:  %d,%d,%d\n", width, height, layers);
 		return 0;
 	}
+		
+	int loadascii(const std::string& fname) {
+		// load
+		vector<string> ascmap = {
+			"############",
+			"#..#.......#",
+			"#..#.......#",
+			"#..........#",
+			"#####..#####",
+			"#..........#",
+			"#..........#",
+			"#..........#",
+			"#####DD#####",
+			"T,,,,,,,,,,T",
+			"T,,,,,,,,,,T",
+		};
+		// map size
+		height = ascmap.size();
+		width = ascmap[0].length();
+		// parse to int list
+		tmap = { {}, {} };
+		for (const auto& s : ascmap)
+		for (char c : s) {
+			int t = 0, k = 0;
+			switch (c) {
+			case ' ':  t =  0;  break;
+			case ',':  t =  1;  break;
+			case '.':  t =  3;  break;
+			case '#':  t =  8;  break;
+			case 'T':  t =  9;  break;
+			case 'D':  t = 10;  break;
+			}
+			k = (t >= 4);
+			tmap[0].push_back(t+1);
+			tmap[1].push_back(k);
+		}
+		layers = tmap.size();
+		return 0;
+	}
 
 } // end map

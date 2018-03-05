@@ -32,6 +32,7 @@ namespace map {
 	extern int width, height, layers;
 	extern std::vector<std::vector<int>> tmap;
 	int loadmap(const std::string& fname);
+	int loadascii(const std::string& fname);
 }
 namespace npcs {
 	struct npc {
