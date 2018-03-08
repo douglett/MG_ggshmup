@@ -40,8 +40,8 @@ int main(int argc, char** argv) {
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
 	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });
-	npcs::npclist.push_back({ "coffee", "coffee", 1, 2 });
-	npcs::npclist.push_back({ "book",   "coffee", 0, 3 });
+	npcs::npclist.push_back({ "coffee", "nilcoffee", 1, 2 });
+	npcs::npclist.push_back({ "book",   "nilcoffee", 0, 3 });
 	
 	mainloop();
 	
@@ -167,7 +167,8 @@ void action1() {
 		case 2:  y++;  break;
 		case 3:  x--;  break;
 	}
-	for (const auto& nn : npcs::npclist) {
+	for (int i=0; i<npcs::npclist.size(); i++) {
+		const auto& nn = npcs::npclist[i];
 		if (nn.x != x || nn.y != y)  continue;
 		printf("[[%s]]\n", nn.id.c_str());  // show id
 		if (nn.id == "npc1") {
@@ -179,6 +180,11 @@ void action1() {
 		}
 		else if (nn.id == "book") {
 			menus::dialogue("\"to be or not to\nbe;\"\na gripping read!");
+		}
+		else if (nn.id == "door1") {
+			map::tmap[0][y * map::width + x] = 1;  // blank
+			map::tmap[map::layers - 1][y * map::width + x] = 0;  // collision layer
+			npcs::npclist.erase( npcs::npclist.begin() + i );
 		}
 		break;
 	}

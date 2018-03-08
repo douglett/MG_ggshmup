@@ -87,6 +87,7 @@ namespace map {
 		width = ascmap[0].length();
 		// parse to int list
 		tmap = { {}, {} };
+		int mpos = 0;
 		for (const auto& s : ascmap)
 		for (char c : s) {
 			int t = 0, k = 0;
@@ -96,13 +97,14 @@ namespace map {
 			case '.':  t =  3;  break;
 			case '#':  t =  8;  break;
 			case 'T':  t =  9;  break;
-			case 'D':  t = 10;  break;
+			case 'D':  t = 10;  npcs::npclist.push_back({ "door1", "nilcoffee", mpos%width, mpos/width });  break;
 			case '/':  t = 11;  break;
 			case '|':  t = 12;  break;
 			}
 			k = (t >= 4);
 			tmap[0].push_back(t+1);
 			tmap[1].push_back(k);
+			mpos++;
 		}
 		layers = tmap.size();
 		return 0;

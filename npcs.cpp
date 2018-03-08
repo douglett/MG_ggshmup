@@ -5,8 +5,8 @@ namespace npcs {
 	std::vector<npc> npclist;
 	
 	int inview(const npc& n) {
-		if (n.type == "coffee")  return 0;
-		if (n.x < viewport::posx-1 || n.x > viewport::posx+10 || n.y < viewport::posy-1 || n.y > viewport::posy+9)  return 0;
+		if (n.type == "nilcoffee")  return 0;
+		if (n.x < viewport::posx || n.x > viewport::posx+10 || n.y < viewport::posy || n.y > viewport::posy+9)  return 0;
 		return 1;
 	}
 	
