@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <list>
 #include <SDL/SDL.h>
 
 // types
@@ -47,11 +48,14 @@ namespace npcs {
 		int px, py;
 		int dir;
 	};
-	extern std::vector<npc> npclist;
+	extern std::list<npc> npclist;
 	int inview(const npc& n);
-	SDL_Rect getpos(const npc& n);
+	SDL_Rect getdst(const npc& n);
 	SDL_Rect getsrc(const npc& n);
 	npc& getbyid(const std::string& id);
+	npc& getbypos(int x, int y);
+	void erase(const npc& n);
+	void erase(const std::string id);
 }
 
 namespace menus {

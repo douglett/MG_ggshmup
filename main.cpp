@@ -12,8 +12,8 @@ namespace viewport {
 		auto& n = npcs::getbyid(follow);
 		posx = n.x - 4;
 		posy = n.y - 4;
-		offx = 7 - n.px;
-		offy = -n.py;
+		offx = n.px - 7;
+		offy = n.py;
 	}
 }
 
@@ -90,7 +90,7 @@ int mainloop() {
 			
 		if (movedir >= 0)
 			walk2(movedir);
-		viewport::recenter();		
+		viewport::recenter();
 		paint1();
 		flip3x();
 	}
@@ -103,10 +103,10 @@ void walk1(int dir) {
 	// walkscreen pixels
 	for (int i=1; i<16; i++) {
 		switch (dir) {
-			case 0:  viewport::offy++;  break;
-			case 1:  viewport::offx--;  break;
-			case 2:  viewport::offy--;  break;
-			case 3:  viewport::offx++;  break;
+			case 0:  viewport::offy--;  break;
+			case 1:  viewport::offx++;  break;
+			case 2:  viewport::offy++;  break;
+			case 3:  viewport::offx--;  break;
 		}
 		paint1();
 		flip3x();
@@ -167,26 +167,25 @@ void action1() {
 		case 2:  y++;  break;
 		case 3:  x--;  break;
 	}
-	for (int i=0; i<npcs::npclist.size(); i++) {
-		const auto& nn = npcs::npclist[i];
-		if (nn.x != x || nn.y != y)  continue;
-		printf("[[%s]]\n", nn.id.c_str());  // show id
-		if (nn.id == "npc1") {
-			menus::dialogue("hello, how are\nyou?");
-			menus::dialogue("i hope you are\nwell!");
-		}
-		else if (nn.id == "coffee") {
-			menus::dialogue("you sip some\ncoffee.\nmmm!");
-		}
-		else if (nn.id == "book") {
-			menus::dialogue("\"to be or not to\nbe;\"\na gripping read!");
-		}
-		else if (nn.id == "door1") {
-			map::tmap[0][y * map::width + x] = 1;  // blank
-			map::tmap[map::layers - 1][y * map::width + x] = 0;  // collision layer
-			npcs::npclist.erase( npcs::npclist.begin() + i );
-		}
-		break;
+	// get npc
+	auto& nn = npcs::getbypos(x, y);
+	if (nn.id == "none")  return;
+	printf("[[%s]]\n", nn.id.c_str());  // show id
+	// action
+	if (nn.id == "npc1") {
+		menus::dialogue("hello, how are\nyou?");
+		menus::dialogue("i hope you are\nwell!");
+	}
+	else if (nn.id == "coffee") {
+		menus::dialogue("you sip some\ncoffee.\nmmm!");
+	}
+	else if (nn.id == "book") {
+		menus::dialogue("\"to be or not to\nbe;\"\na gripping read!");
+	}
+	else if (nn.id == "door1") {
+		map::tmap[0][y * map::width + x] = 1;  // blank
+		map::tmap[map::layers - 1][y * map::width + x] = 0;  // collision layer
+		npcs::erase(nn);
 	}
 }
 
@@ -206,20 +205,20 @@ void paint1() {
 		// loop each layer
 		for (int l = 0; l < map::layers-1; l++) {	
 			auto srcimg = map::gettile(l, viewport::posx + x, viewport::posy + y);
-			SDL_Rect dst = { int16_t(x*16 + viewport::offx), int16_t(y*16 + viewport::offy), 0, 0 };
+			SDL_Rect dst = { int16_t(x*16 - viewport::offx), int16_t(y*16 - viewport::offy), 0, 0 };
 			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
 		}
 	}
 	// draw npcs
 	auto nls = npcs::npclist;
-	sort(nls.begin(), nls.end(), npcsort);
+//	sort(nls.begin(), nls.end(), npcsort);
 	for (const auto& n : nls) {
 		if (!npcs::inview(n))  continue;
 		auto src = npcs::getsrc(n);
-		auto dst = npcs::getpos(n);
-		SDL_BlitSurface(guyshadow, NULL, buf, &dst);
-		dst.y -= 6;
-		SDL_BlitSurface(guy, &src, buf, &dst);
+		auto dst = npcs::getdst(n);
+		auto dst2 = dst;  dst2.y -= 6;  // must make a copy, to only use dst once
+		SDL_BlitSurface(guyshadow, NULL, buf, &dst);  // SDL BUG? This is changing dst!
+		SDL_BlitSurface(guy, &src, buf, &dst2);
 	}
 	qbprint(buf, 1, 1, "RPG proto");  // test info
 }
