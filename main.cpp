@@ -190,7 +190,7 @@ void action1() {
 }
 
 
-static bool npcsort(const npcs::npc& l, const npcs::npc& r) {
+static bool npc_sort_posy(const npcs::npc& l, const npcs::npc& r) {
 	return (l.y < r.y);
 }
 
@@ -211,7 +211,7 @@ void paint1() {
 	}
 	// draw npcs
 	auto nls = npcs::npclist;
-//	sort(nls.begin(), nls.end(), npcsort);
+	nls.sort(npc_sort_posy);
 	for (const auto& n : nls) {
 		if (!npcs::inview(n))  continue;
 		auto src = npcs::getsrc(n);
