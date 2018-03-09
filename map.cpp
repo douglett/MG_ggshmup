@@ -95,13 +95,13 @@ namespace map {
 			case ' ':  t =  0;  break;
 			case ',':  t =  1;  break;
 			case '.':  t =  3;  break;
-			case '#':  t =  8;  break;
-			case 'T':  t =  9;  break;
-			case 'D':  t = 10;  npcs::npclist.push_back({ "door1", "nilcoffee", mpos%width, mpos/width });  break;
-			case '/':  t = 11;  break;
-			case '|':  t = 12;  break;
+			case '#':  t =  8;  k = 1;  break;
+			case 'T':  t =  9;  k = 1;  break;
+			case 'D':  t = 10;  k = 1;  npcs::npclist.push_back({ "door1", "nilcoffee", mpos%width, mpos/width });  break;
+			case '/':  t = 11;  k = -1;  break;
+			case '|':  t = 12;  k = -1;  break;
 			}
-			k = (t >= 4);
+			// k = (t >= 4);
 			tmap[0].push_back(t+1);
 			tmap[1].push_back(k);
 			mpos++;
