@@ -4,38 +4,22 @@
 #include <sstream>
 using namespace std;
 
-//struct Map2D {
-//	int width = 0, height = 0, layers = 0;
-//	SDL_Surface* tileset = NULL;
-//	std::vector<std::vector<int>> tilemap;
-//	// tile map type overrides
-//	int loadmap(const std::string& fname);
-//	
-//	int bounds(int l, int x, int y) {
-//		return ( l < 0 || x < 0 || y < 0 || l >= layers || x >= width || y >= height ); 
-//	}
-//	
-//	int tileat(int l, int x, int y) {
-//		if (bounds(l, x, y))  return 0;
-//		return tilemap[l][y * width + x];
-//	}
-//	
-//	int collide(int x, int y) {
-//		if (layers < 2)  return 0;
-//		if (bounds(layers-1, x, y))  return 1;
-//		return 0;
-//	}
-//	
-//	SrcImg gettile(int l, int x, int y) {
-//		const int tswidth = tileset->w / 16;
-//		int t = tileat(l, x, y);
-//		if (t == 0)  return { {0}, NULL };
-//		t--;
-//		SDL_Rect r = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
-//		return { r, tileset };
-//	}
-//};
 
+struct Map2D {
+	int width = 0, height = 0, layers = 0;
+	SDL_Surface* tileset = NULL;
+	std::vector<std::vector<int>> tilemap;
+	// tile map type overrides
+	int loadmap(const std::string& fname);
+	// functions
+	int bounds(int l, int x, int y);
+	int tileat(int l, int x, int y);
+	int collide(int x, int y);
+	SrcImg gettile(int l, int x, int y);
+};
+struct Map2DTmx : Map2D {
+	loadmap(const std::string& fname);
+};
 
 
 //*** struct Map2D
@@ -51,10 +35,11 @@ int Map2D::tileat(int l, int x, int y) {
 int Map2D::collide(int x, int y) {
 	if (layers < 2)  return 0;
 	if (bounds(layers-1, x, y))  return 1;
-	return 0;
+	return tileat(layers-1, x, y);
 }
 	
 SrcImg Map2D::gettile(int l, int x, int y) {
+	assert(tileset != NULL);
 	const int tswidth = tileset->w / 16;
 	int t = tileat(l, x, y);
 	if (t == 0)  return { {0}, NULL };
@@ -65,11 +50,7 @@ SrcImg Map2D::gettile(int l, int x, int y) {
 //*** end Map2D
 
 
-//*** struct Map2DTmx
-struct Map2DTmx : Map2D {
-	loadmap(const std::string& fname);
-};
-	
+//*** struct Map2DTmx	
 int Map2DTmx::loadmap(const std::string& fname) {
 	fstream fs(fname, fstream::in);
 	assert(fs.is_open() == true);
@@ -131,6 +112,7 @@ int Map2DTmx::loadmap(const std::string& fname) {
 //*** end Map2DTmx
 
 
+//*** struct Map2DAscii
 struct Map2DAscii : Map2D {
 	std::vector<std::string> ascmap;
 	const std::map<char, int> chartile = {

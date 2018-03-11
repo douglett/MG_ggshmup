@@ -3,7 +3,7 @@
 using namespace std;
 
 SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
-Map2D gamemap;
+//Map2DTmx gamemap;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
@@ -36,8 +36,11 @@ int main(int argc, char** argv) {
 	guyshadow = createshadow();
 //	tileset = loadbmp("rpgindoor1.bmp");
 //	map::loadmap("room1.tmx");
+//	gamemap.tileset = tileset;
+//	gamemap.loadmap("room1.tmx");
 	tileset = loadbmp("hicontile.bmp");
 	gmap::loadascii("mil");
+	
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
 	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });
@@ -88,7 +91,7 @@ int mainloop() {
 				default:  ;
 				}
 			}
-			
+		
 		if (movedir >= 0)
 			walk2(movedir);
 		viewport::recenter();
@@ -133,6 +136,7 @@ void walk2(int dir) {
 	}
 	// collision 1
 	if (gmap::collide(x, y))  return;
+//	if (gamemap.collide(x, y))  return;
 	// collision 2
 	for (const auto& nn : npcs::npclist)
 		if (nn.x == x && nn.y == y)  return;
@@ -186,6 +190,8 @@ void action1() {
 	else if (nn.id == "door1") {
 		gmap::tmap[0][y * gmap::width + x] = 1;  // blank
 		gmap::tmap[gmap::layers - 1][y * gmap::width + x] = 0;  // collision layer
+//		gamemap.tilemap[0][y * gamemap.width + x] = 1;  // blank
+//		gamemap.tilemap[gamemap.layers - 1][y * gamemap.width + x] = 0;  // collision layer
 		npcs::erase(nn);
 	}
 }
@@ -203,9 +209,13 @@ void paint1() {
 	for (int x = -2; x <= 10; x++) {
 		if (viewport::posy + y < 0 || viewport::posy + y >= gmap::height)  continue;
 		if (viewport::posx + x < 0 || viewport::posx + x >= gmap::width)  continue;
+//		if (viewport::posy + y < 0 || viewport::posy + y >= gamemap.height)  continue;
+//		if (viewport::posx + x < 0 || viewport::posx + x >= gamemap.width)  continue;
 		// loop each layer
 		for (int l = 0; l < gmap::layers-1; l++) {	
+//		for (int l = 0; l < gamemap.layers-1; l++) {
 			auto srcimg = gmap::gettile(l, viewport::posx + x, viewport::posy + y);
+//			auto srcimg = gamemap.gettile(l, viewport::posx + x, viewport::posy + y);
 			SDL_Rect dst = { int16_t(x*16 - viewport::offx), int16_t(y*16 - viewport::offy), 0, 0 };
 			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
 		}
