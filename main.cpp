@@ -3,6 +3,7 @@
 using namespace std;
 
 SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
+Map2D gamemap;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;

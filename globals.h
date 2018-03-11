@@ -28,6 +28,19 @@ void scalex(SDL_Surface* sf, int sx);
 void qbprint(SDL_Surface* sf, int x, int y, const std::string& s);
 std::string join(const std::vector<std::string>& vs, const std::string& glue);
 
+struct Map2D {
+	int width = 0, height = 0, layers = 0;
+	SDL_Surface* tileset = NULL;
+	std::vector<std::vector<int>> tilemap;
+	// tile map type overrides
+	int loadmap(const std::string& fname);
+	// functions
+	int bounds(int l, int x, int y);
+	int tileat(int l, int x, int y);
+	int collide(int x, int y);
+	SrcImg gettile(int l, int x, int y);
+};
+
 namespace viewport {
 	extern int posx, posy;
 	extern int offx, offy;

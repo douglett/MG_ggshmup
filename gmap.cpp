@@ -1,6 +1,7 @@
 #include "globals.h"
 #include <fstream>
 #include <sstream>
+#include <cassert>
 using namespace std;
 
 
@@ -11,6 +12,7 @@ namespace gmap {
 	
 	int loadmap(const std::string& fname) {
 		fstream fs(fname, fstream::in);
+		assert(fs.is_open() == true);
 		string input, s;
 		while (getline(fs, s))
 			input += s;
