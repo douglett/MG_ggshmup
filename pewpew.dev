@@ -81,7 +81,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=map.cpp
+FileName=gmap.cpp
 CompileCpp=1
 Folder=
 Compile=1

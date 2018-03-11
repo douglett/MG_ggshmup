@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 //	tileset = loadbmp("rpgindoor1.bmp");
 //	map::loadmap("room1.tmx");
 	tileset = loadbmp("hicontile.bmp");
-	map::loadascii("mil");
+	gmap::loadascii("mil");
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
 	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });
@@ -131,7 +131,7 @@ void walk2(int dir) {
 		case 3:  x--;  n.dir = 3;  break;
 	}
 	// collision 1
-	if (map::collide(x, y))  return;
+	if (gmap::collide(x, y))  return;
 	// collision 2
 	for (const auto& nn : npcs::npclist)
 		if (nn.x == x && nn.y == y)  return;
@@ -183,8 +183,8 @@ void action1() {
 		menus::dialogue("\"to be or not to\nbe;\"\na gripping read!");
 	}
 	else if (nn.id == "door1") {
-		map::tmap[0][y * map::width + x] = 1;  // blank
-		map::tmap[map::layers - 1][y * map::width + x] = 0;  // collision layer
+		gmap::tmap[0][y * gmap::width + x] = 1;  // blank
+		gmap::tmap[gmap::layers - 1][y * gmap::width + x] = 0;  // collision layer
 		npcs::erase(nn);
 	}
 }
@@ -200,11 +200,11 @@ void paint1() {
 	// loop each axis
 	for (int y = -1; y <= 9; y++)
 	for (int x = -2; x <= 10; x++) {
-		if (viewport::posy + y < 0 || viewport::posy + y >= map::height)  continue;
-		if (viewport::posx + x < 0 || viewport::posx + x >= map::width)  continue;
+		if (viewport::posy + y < 0 || viewport::posy + y >= gmap::height)  continue;
+		if (viewport::posx + x < 0 || viewport::posx + x >= gmap::width)  continue;
 		// loop each layer
-		for (int l = 0; l < map::layers-1; l++) {	
-			auto srcimg = map::gettile(l, viewport::posx + x, viewport::posy + y);
+		for (int l = 0; l < gmap::layers-1; l++) {	
+			auto srcimg = gmap::gettile(l, viewport::posx + x, viewport::posy + y);
 			SDL_Rect dst = { int16_t(x*16 - viewport::offx), int16_t(y*16 - viewport::offy), 0, 0 };
 			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
 		}

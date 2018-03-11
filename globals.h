@@ -34,7 +34,7 @@ namespace viewport {
 	extern std::string follow;
 	void recenter();
 }
-namespace map {
+namespace gmap {
 	extern int width, height, layers;
 	extern std::vector<std::vector<int>> tmap;
 	int loadmap(const std::string& fname);

@@ -4,7 +4,7 @@
 using namespace std;
 
 
-namespace map {
+namespace gmap {
 	
 	int width = 0, height = 0, layers = 0;
 	vector<vector<int>> tmap;
@@ -118,7 +118,7 @@ namespace map {
 	
 	SrcImg gettile(int l, int x, int y) {
 		const int tswidth = tileset->w / 16;
-		int t = map::tmap[l][y * map::width + x];
+		int t = tmap[l][y * width + x];
 		if (t == 0)  return { {0}, NULL };
 		t--;
 		SDL_Rect r = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
