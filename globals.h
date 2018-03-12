@@ -36,11 +36,13 @@ namespace viewport {
 }
 namespace gmap {
 	extern int width, height, layers;
-	extern std::vector<std::vector<int>> tmap;
+	extern std::vector<std::vector<int>> tilemap;
 	int loadmap(const std::string& fname);
 	int loadascii(const std::string& fname);
+	int bounds(int l, int x, int y);
 	int collide(int x, int y);
 	SrcImg gettile(int l, int x, int y);
+	void paint(SDL_Rect viewport, int posx, int posy);
 }
 namespace npcs {
 	struct npc {

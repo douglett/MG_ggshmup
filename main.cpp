@@ -13,8 +13,9 @@ namespace viewport {
 		auto& n = npcs::getbyid(follow);
 		posx = n.x - 4;
 		posy = n.y - 4;
-		offx = n.px - 7;
+		offx = n.px + 7;
 		offy = n.py;
+		if (offx >= 16)  offx %= 16, posx++;
 	}
 }
 
@@ -188,8 +189,8 @@ void action1() {
 		menus::dialogue("\"to be or not to\nbe;\"\na gripping read!");
 	}
 	else if (nn.id == "door1") {
-		gmap::tmap[0][y * gmap::width + x] = 1;  // blank
-		gmap::tmap[gmap::layers - 1][y * gmap::width + x] = 0;  // collision layer
+		gmap::tilemap[0][y * gmap::width + x] = 1;  // blank
+		gmap::tilemap[gmap::layers - 1][y * gmap::width + x] = 0;  // collision layer
 //		gamemap.tilemap[0][y * gamemap.width + x] = 1;  // blank
 //		gamemap.tilemap[gamemap.layers - 1][y * gamemap.width + x] = 0;  // collision layer
 		npcs::erase(nn);
@@ -204,22 +205,8 @@ static bool npc_sort_posy(const npcs::npc& l, const npcs::npc& r) {
 void paint1() {
 	// cls
 	SDL_FillRect(buf, NULL, 0x111111ff);
-	// loop each axis
-	for (int y = -1; y <= 9; y++)
-	for (int x = -2; x <= 10; x++) {
-		if (viewport::posy + y < 0 || viewport::posy + y >= gmap::height)  continue;
-		if (viewport::posx + x < 0 || viewport::posx + x >= gmap::width)  continue;
-//		if (viewport::posy + y < 0 || viewport::posy + y >= gamemap.height)  continue;
-//		if (viewport::posx + x < 0 || viewport::posx + x >= gamemap.width)  continue;
-		// loop each layer
-		for (int l = 0; l < gmap::layers-1; l++) {	
-//		for (int l = 0; l < gamemap.layers-1; l++) {
-			auto srcimg = gmap::gettile(l, viewport::posx + x, viewport::posy + y);
-//			auto srcimg = gamemap.gettile(l, viewport::posx + x, viewport::posy + y);
-			SDL_Rect dst = { int16_t(x*16 - viewport::offx), int16_t(y*16 - viewport::offy), 0, 0 };
-			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
-		}
-	}
+	// repaint map
+	gmap::paint( { int16_t(viewport::posx), int16_t(viewport::posy), 10, 9 }, -viewport::offx, -viewport::offy );
 	// draw npcs
 	auto nls = npcs::npclist;
 	nls.sort(npc_sort_posy);

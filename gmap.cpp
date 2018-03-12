@@ -8,7 +8,7 @@ using namespace std;
 namespace gmap {
 	
 	int width = 0, height = 0, layers = 0;
-	vector<vector<int>> tmap;
+	vector<vector<int>> tilemap;
 	
 	int loadmap(const std::string& fname) {
 		fstream fs(fname, fstream::in);
@@ -53,17 +53,17 @@ namespace gmap {
 		}
 		
 		// parse rows to number list
-		tmap = {};
+		tilemap = {};
 		for (auto& d : data) {
 			for (char& c : d)
 				if (c == ',')  c = ' ';
-			tmap.push_back({});
+			tilemap.push_back({});
 			stringstream ss(d);
 			int n = 0;
 			while (ss >> n)
-				tmap.back().push_back(n);
+				tilemap.back().push_back(n);
 		}
-		layers = tmap.size();
+		layers = tilemap.size();
 		
 		printf("map load OK:  %d,%d,%d\n", width, height, layers);
 		return 0;
@@ -88,7 +88,7 @@ namespace gmap {
 		height = ascmap.size();
 		width = ascmap[0].length();
 		// parse to int list
-		tmap = { {}, {} };
+		tilemap = { {}, {} };
 		int mpos = 0;
 		for (const auto& s : ascmap)
 		for (char c : s) {
@@ -104,27 +104,43 @@ namespace gmap {
 			case '|':  t = 12;  k = -1;  break;
 			}
 			// k = (t >= 4);
-			tmap[0].push_back(t+1);
-			tmap[1].push_back(k);
+			tilemap[0].push_back(t+1);
+			tilemap[1].push_back(k);
 			mpos++;
 		}
-		layers = tmap.size();
+		layers = tilemap.size();
 		return 0;
 	}
 	
+	int bounds(int l, int x, int y) {
+		return (l < 0 || x < 0 || y < 0 || l >= layers || x >= width || y >= height);
+	}
+	
 	int collide(int x, int y) {
-		if (x < 0 || y < 0 || x >= width || y >= height)  return 1;  // bounds check
-		if (tmap[layers-1][y * width + x] > 0)  return 1;  // top layer collision
+		if (bounds(layers-1, x, y))  return 1;  // bounds check
+		if (tilemap[layers-1][y * width + x] > 0)  return 1;  // top layer collision
 		return 0;
 	}
 	
 	SrcImg gettile(int l, int x, int y) {
+		if (bounds(l, x, y))  return { {0}, NULL };
 		const int tswidth = tileset->w / 16;
-		int t = tmap[l][y * width + x];
+		int t = tilemap[l][y * width + x];
 		if (t == 0)  return { {0}, NULL };
 		t--;
 		SDL_Rect r = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
 		return { r, tileset };
+	}
+	
+	void paint(SDL_Rect viewport, int posx, int posy) {
+		for (int y = -1; y <= viewport.h; y++)
+		for (int x = -1; x <= viewport.w; x++)
+		for (int l = 0; l < layers-1; l++) {
+			auto srcimg = gettile(l, viewport.x + x, viewport.y + y);
+			if (srcimg.sf == NULL)  continue;
+			SDL_Rect dst = { int16_t(x*16 + posx), int16_t(y*16 + posy), 0, 0 };
+			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
+		}
 	}
 
 } // end map
