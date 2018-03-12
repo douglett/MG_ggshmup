@@ -8,7 +8,8 @@ using namespace std;
 namespace gmap {
 	
 	int width = 0, height = 0, layers = 0;
-	vector<vector<int>> tilemap;
+	std::vector<std::vector<int>> tilemap;
+	std::vector<gmap::Sprite> sprites;
 	
 	int loadmap(const std::string& fname) {
 		fstream fs(fname, fstream::in);

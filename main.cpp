@@ -3,7 +3,6 @@
 using namespace std;
 
 SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
-//Map2DTmx gamemap;
 namespace viewport {
 	int posx = 0,  posy = 0;
 	int offx = 0,  offy = 0;
@@ -15,7 +14,7 @@ namespace viewport {
 		posy = n.y - 4;
 		offx = n.px + 7;
 		offy = n.py;
-		if (offx >= 16)  offx %= 16, posx++;
+		if (offx >= 16)  offx %= 16, posx++;  // overflow
 	}
 }
 
@@ -37,8 +36,6 @@ int main(int argc, char** argv) {
 	guyshadow = createshadow();
 //	tileset = loadbmp("rpgindoor1.bmp");
 //	map::loadmap("room1.tmx");
-//	gamemap.tileset = tileset;
-//	gamemap.loadmap("room1.tmx");
 	tileset = loadbmp("hicontile.bmp");
 	gmap::loadascii("mil");
 	
@@ -137,7 +134,6 @@ void walk2(int dir) {
 	}
 	// collision 1
 	if (gmap::collide(x, y))  return;
-//	if (gamemap.collide(x, y))  return;
 	// collision 2
 	for (const auto& nn : npcs::npclist)
 		if (nn.x == x && nn.y == y)  return;
@@ -191,8 +187,6 @@ void action1() {
 	else if (nn.id == "door1") {
 		gmap::tilemap[0][y * gmap::width + x] = 1;  // blank
 		gmap::tilemap[gmap::layers - 1][y * gmap::width + x] = 0;  // collision layer
-//		gamemap.tilemap[0][y * gamemap.width + x] = 1;  // blank
-//		gamemap.tilemap[gamemap.layers - 1][y * gamemap.width + x] = 0;  // collision layer
 		npcs::erase(nn);
 	}
 }

@@ -35,8 +35,10 @@ namespace viewport {
 	void recenter();
 }
 namespace gmap {
+	struct Sprite { std::string id; int posx; int posy; int offx; int offy; };
 	extern int width, height, layers;
 	extern std::vector<std::vector<int>> tilemap;
+	extern std::vector<gmap::Sprite> sprites;
 	int loadmap(const std::string& fname);
 	int loadascii(const std::string& fname);
 	int bounds(int l, int x, int y);
