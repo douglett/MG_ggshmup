@@ -16,6 +16,7 @@ int  mainloop();
 SDL_Surface* createshadow();
 void walk1(int dir);
 void walk2(int dir);
+void walk3(int dir);
 void action1();
 void paint1();
 void flip3x();
@@ -35,16 +36,18 @@ namespace viewport {
 	void recenter();
 }
 namespace gmap {
-	struct Sprite { std::string id; int posx; int posy; int offx; int offy; };
 	extern int width, height, layers;
+	extern SDL_Rect viewport;
 	extern std::vector<std::vector<int>> tilemap;
-	extern std::vector<gmap::Sprite> sprites;
+	struct Sprite { std::string id; SDL_Rect pos; };
+	extern std::list<gmap::Sprite> sprites;
 	int loadmap(const std::string& fname);
 	int loadascii(const std::string& fname);
 	int bounds(int l, int x, int y);
 	int collide(int x, int y);
 	SrcImg gettile(int l, int x, int y);
 	void paint(SDL_Rect viewport, int posx, int posy);
+	void paint();
 }
 namespace npcs {
 	struct npc {

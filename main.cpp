@@ -12,9 +12,12 @@ namespace viewport {
 		auto& n = npcs::getbyid(follow);
 		posx = n.x - 4;
 		posy = n.y - 4;
-		offx = n.px + 7;
+		offx = n.px; // + 7;
 		offy = n.py;
 		if (offx >= 16)  offx %= 16, posx++;  // overflow
+		
+		gmap::viewport.x = (n.x - 4) * 16 + offx;
+		gmap::viewport.y = (n.y - 4) * 16 + offy;
 	}
 }
 
@@ -160,6 +163,16 @@ void walk2(int dir) {
 }
 
 
+void walk3(int dir) {
+	switch (dir) {
+		case 0:  gmap::viewport.y--;  break;
+		case 1:  gmap::viewport.x++;  break;
+		case 2:  gmap::viewport.y++;  break;
+		case 3:  gmap::viewport.x--;  break;
+	}
+}
+
+
 void action1() {
 	auto& n = npcs::getbyid("guy");
 	int x = n.x, y = n.y;
@@ -200,7 +213,8 @@ void paint1() {
 	// cls
 	SDL_FillRect(buf, NULL, 0x111111ff);
 	// repaint map
-	gmap::paint( { int16_t(viewport::posx), int16_t(viewport::posy), 10, 9 }, -viewport::offx, -viewport::offy );
+//	gmap::paint( { int16_t(viewport::posx), int16_t(viewport::posy), 10, 9 }, -viewport::offx, -viewport::offy );
+	gmap::paint();
 	// draw npcs
 	auto nls = npcs::npclist;
 	nls.sort(npc_sort_posy);

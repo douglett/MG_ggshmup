@@ -8,8 +8,9 @@ using namespace std;
 namespace gmap {
 	
 	int width = 0, height = 0, layers = 0;
+	SDL_Rect viewport = { 0, 0, 10*16, 9*16 };
 	std::vector<std::vector<int>> tilemap;
-	std::vector<gmap::Sprite> sprites;
+	std::list<gmap::Sprite> sprites;
 	
 	int loadmap(const std::string& fname) {
 		fstream fs(fname, fstream::in);
@@ -140,6 +141,28 @@ namespace gmap {
 			auto srcimg = gettile(l, viewport.x + x, viewport.y + y);
 			if (srcimg.sf == NULL)  continue;
 			SDL_Rect dst = { int16_t(x*16 + posx), int16_t(y*16 + posy), 0, 0 };
+			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
+		}
+	}
+	
+	void paint() {
+		// calculate tile positions
+		int twidth = viewport.w / 16;
+		int theight = viewport.h / 16;
+		int tx = viewport.x / 16;
+		int px = viewport.x % 16;
+		int ty = viewport.y / 16;
+		int py = viewport.y % 16;
+		if (viewport.x < 0)  tx--, px += 16;  // special case, negative offset
+		if (viewport.y < 0)  ty--, py += 16;
+		// 
+		// SDL_SetClipRect(buf, tt);
+		for (int y = 0; y <= theight; y++)
+		for (int x = 0; x <= twidth; x++)
+		for (int l = 0; l < layers-1; l++) {
+			auto srcimg = gettile(l, tx + x, ty + y);
+			if (srcimg.sf == NULL)  continue;
+			SDL_Rect dst = { int16_t(x*16 - px), int16_t(y*16 - py), 0, 0 };
 			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
 		}
 	}
