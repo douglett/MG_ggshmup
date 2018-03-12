@@ -10,7 +10,7 @@ namespace gmap {
 	int width = 0, height = 0, layers = 0;
 	SDL_Rect viewport = { 0, 0, 10*16, 9*16 };
 	std::vector<std::vector<int>> tilemap;
-	std::list<gmap::Sprite> sprites;
+	std::list<gmap::Sprite> spritelist;
 	
 	int loadmap(const std::string& fname) {
 		fstream fs(fname, fstream::in);
@@ -155,7 +155,7 @@ namespace gmap {
 		int py = viewport.y % 16;
 		if (viewport.x < 0)  tx--, px += 16;  // special case, negative offset
 		if (viewport.y < 0)  ty--, py += 16;
-		// 
+		// show blocks
 		// SDL_SetClipRect(buf, tt);
 		for (int y = 0; y <= theight; y++)
 		for (int x = 0; x <= twidth; x++)
@@ -164,6 +164,14 @@ namespace gmap {
 			if (srcimg.sf == NULL)  continue;
 			SDL_Rect dst = { int16_t(x*16 - px), int16_t(y*16 - py), 0, 0 };
 			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
+		}
+		// show sprites
+		for (const auto& spr : spritelist) {
+			if (spr.pos.x > viewport.x + viewport.w || spr.pos.x + spr.pos.w < viewport.x)  continue;
+			if (spr.pos.y > viewport.y + viewport.h || spr.pos.y + spr.pos.h < viewport.y)  continue;
+			SDL_Rect dst = spr.pos;
+			dst.y -= viewport.y, dst.x -= viewport.x;
+			SDL_FillRect(buf, &dst, 0xff0000ff);
 		}
 	}
 

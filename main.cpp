@@ -48,6 +48,8 @@ int main(int argc, char** argv) {
 	npcs::npclist.push_back({ "coffee", "nilcoffee", 1, 2 });
 	npcs::npclist.push_back({ "book",   "nilcoffee", 0, 3 });
 	
+	gmap::spritelist.push_back({ "test1", { 3*16, 3*16, 16, 16 }, { {0}, NULL } });
+	
 	mainloop();
 	
 	SDL_Quit();

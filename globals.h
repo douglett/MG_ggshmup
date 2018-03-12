@@ -39,8 +39,8 @@ namespace gmap {
 	extern int width, height, layers;
 	extern SDL_Rect viewport;
 	extern std::vector<std::vector<int>> tilemap;
-	struct Sprite { std::string id; SDL_Rect pos; };
-	extern std::list<gmap::Sprite> sprites;
+	struct Sprite { std::string id; SDL_Rect pos; SrcImg img; };
+	extern std::list<gmap::Sprite> spritelist;
 	int loadmap(const std::string& fname);
 	int loadascii(const std::string& fname);
 	int bounds(int l, int x, int y);
