@@ -18,6 +18,7 @@ void walk1(int dir);
 void walk2(int dir);
 void walk3(int dir);
 void action1();
+void action2();
 void paint1();
 void flip3x();
 
@@ -65,11 +66,13 @@ namespace npcs {
 	void erase(const npc& n);
 	void erase(const std::string id);
 }
-
 namespace menus {
 	int init();
 	void txtbox(SDL_Rect dst, const std::string& txt);
 	void dialogue(const std::string& str);
 	std::string showlist(SDL_Rect mbox, const std::vector<std::string>& mitems);
 	void showinv();
+}
+namespace battle {
+	void begin();
 }

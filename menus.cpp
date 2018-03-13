@@ -37,7 +37,7 @@ namespace menus {
 				}
 			// show text
 			if (state == 1) {
-				anim = (anim+1) % 3;
+				anim = (anim+1) % 2;
 				if (anim != 0)  ;
 				else if (txt != txt2)
 					txt2 += txt[ txt2.size() ];  // next letter
@@ -45,7 +45,7 @@ namespace menus {
 					state = 2;  // eol - next state
 			}
 			// redraw
-			paint1();
+			//paint1();
 			SDL_Rect dst = { 10, 100, 140, 40 };
 			txtbox(dst, txt2);
 			// flashing arrow
@@ -59,7 +59,7 @@ namespace menus {
 	}
 	
 	std::string showlist(SDL_Rect mbox, const std::vector<std::string>& mitems) {
-		assert(mitems.size() && mitems.back() == "back");
+		//assert(mitems.size() && mitems.back() == "back");
 		// init
 		SDL_Surface* sf = clonesurface(buf);
 		int looping = 1;

@@ -48,7 +48,8 @@ int main(int argc, char** argv) {
 	npcs::npclist.push_back({ "coffee", "nilcoffee", 1, 2 });
 	npcs::npclist.push_back({ "book",   "nilcoffee", 0, 3 });
 	
-	gmap::spritelist.push_back({ "test1", { 3*16, 3*16, 16, 16 }, { {0}, NULL } });
+	gmap::spritelist.push_back({ "test1", {3*16, 3*16, 16, 16}, {{0}, NULL} });
+	gmap::spritelist.push_back({ "test2", {2*16, 3*16, 16, 16}, {{16, 18*2, 16, 18}, guy} });
 	
 	mainloop();
 	
@@ -79,7 +80,7 @@ int mainloop() {
 				case SDLK_RIGHT:  movedir = 1;  break;
 				case SDLK_DOWN:   movedir = 2;  break;
 				case SDLK_LEFT:   movedir = 3;  break;
-				case SDLK_SPACE:  action1();  break;
+				case SDLK_SPACE:  action2();  break;
 				case 's':
 				case 'i':         menus::showinv();  break;
 				default:  ;
@@ -203,6 +204,30 @@ void action1() {
 		gmap::tilemap[0][y * gmap::width + x] = 1;  // blank
 		gmap::tilemap[gmap::layers - 1][y * gmap::width + x] = 0;  // collision layer
 		npcs::erase(nn);
+	}
+}
+
+
+void action2() {
+	auto& n = npcs::getbyid("guy");
+	int x = n.x, y = n.y;
+	switch (n.dir) {
+		case 0:  y--;  break;
+		case 1:  x++;  break;
+		case 2:  y++;  break;
+		case 3:  x--;  break;
+	}
+	// get npc
+	gmap::Sprite* aspr = NULL;
+	for (auto& spr : gmap::spritelist)
+		if (spr.img.sf != NULL && spr.pos.x/16 == x && spr.pos.y/16 == y) { aspr = &spr;  break; }
+	if (aspr == NULL)  return;
+	printf("npc found: [%s]\n", aspr->id.c_str());
+	// action
+	if (aspr->id == "test2") {
+		menus::dialogue("test 123 hello\nworld!");
+		paint1();
+		battle::begin();
 	}
 }
 

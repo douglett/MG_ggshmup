@@ -121,6 +121,8 @@ namespace gmap {
 	int collide(int x, int y) {
 		if (bounds(layers-1, x, y))  return 1;  // bounds check
 		if (tilemap[layers-1][y * width + x] > 0)  return 1;  // top layer collision
+		for (const auto& spr : spritelist)
+			if (spr.img.sf != NULL && spr.pos.x/16 == x && spr.pos.y/16 == y)  return 1;  // sprite collision
 		return 0;
 	}
 	
@@ -169,9 +171,10 @@ namespace gmap {
 		for (const auto& spr : spritelist) {
 			if (spr.pos.x > viewport.x + viewport.w || spr.pos.x + spr.pos.w < viewport.x)  continue;
 			if (spr.pos.y > viewport.y + viewport.h || spr.pos.y + spr.pos.h < viewport.y)  continue;
-			SDL_Rect dst = spr.pos;
-			dst.y -= viewport.y, dst.x -= viewport.x;
-			SDL_FillRect(buf, &dst, 0xff0000ff);
+			SDL_Rect dst = spr.pos, src = spr.img.r;
+			dst.y -= viewport.y + 6, dst.x -= viewport.x;
+			//SDL_FillRect(buf, &dst, 0xff0000ff);
+			SDL_BlitSurface(spr.img.sf, &src, buf, &dst);
 		}
 	}
 
