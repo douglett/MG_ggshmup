@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 
 SDL_Surface* createshadow() {
 	SDL_Surface* sf = mksurface(16, 16);
+	SDL_FillRect(sf, NULL, 0xff00ff00);
 	for (auto& r : vector<SDL_Rect>{ {2, 10, 12, 2}, {3, 9, 10, 4}, {4, 8, 8, 6} })
 		SDL_FillRect(sf, &r, 0x00000088);
 	return sf;

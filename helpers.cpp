@@ -16,8 +16,10 @@ SDL_Surface* loadbmp(const std::string& fname) {
 }
 
 SDL_Surface* mksurface(int w, int h) {
-	return SDL_CreateRGBSurface(buf->flags, w, h, buf->format->BitsPerPixel, 
+	SDL_Surface* sf = SDL_CreateRGBSurface(buf->flags, w, h, buf->format->BitsPerPixel, 
 		buf->format->Rmask, buf->format->Gmask, buf->format->Bmask, buf->format->Amask);
+	SDL_FillRect(sf, NULL, 0x000000ff);
+	return sf;
 }
 
 SDL_Surface* clonesurface(SDL_Surface* sf) {

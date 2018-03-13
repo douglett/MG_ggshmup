@@ -4,6 +4,7 @@ namespace battle {
 	
 	void begin() {
 		SDL_Surface* sf = clonesurface(buf);
+		printf("{%d} %d %d\n", sf == NULL, sf->w, sf->h);
 		int looping = 1;
 		while (looping) {
 			// main event loop
@@ -23,7 +24,7 @@ namespace battle {
 			SDL_FillRect(buf, &dst, 0xffffffff);
 			dst.x++, dst.y++, dst.w-=2, dst.h-=2;
 			SDL_FillRect(buf, &dst, 0x000000ff);
-			flip3x();
+//			flip3x();
 			// main menu
 			auto opt = menus::showlist({ 10, 90, 60, 4+8*3 }, {"fight", "magic", "flee"});
 			if (opt == "flee")  looping = 0;
