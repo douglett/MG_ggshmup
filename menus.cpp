@@ -3,6 +3,7 @@
 using namespace std;
 
 namespace menus {
+	int textspeed = 1;
 
 	int init() {
 		return 0;
@@ -37,7 +38,7 @@ namespace menus {
 				}
 			// show text
 			if (state == 1) {
-				anim = (anim+1) % 2;
+				anim = (anim+1) % textspeed;
 				if (anim != 0)  ;
 				else if (txt != txt2)
 					txt2 += txt[ txt2.size() ];  // next letter

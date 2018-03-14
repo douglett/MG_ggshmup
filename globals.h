@@ -67,6 +67,7 @@ namespace npcs {
 	void erase(const std::string id);
 }
 namespace menus {
+	extern int textspeed;
 	int init();
 	void txtbox(SDL_Rect dst, const std::string& txt);
 	void dialogue(const std::string& str);
