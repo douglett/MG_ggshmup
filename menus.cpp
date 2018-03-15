@@ -98,6 +98,7 @@ namespace menus {
 		vector<string> mitems = { "items", "quit", "back" };
 		while (true) {
 			paint1();
+			battle::statsbox(105, 10);
 			auto item = showlist({ 2, 10, 52, 29 }, mitems);
 			if      (item == "back" )  break;
 			else if (item == "quit" )  exit(0);

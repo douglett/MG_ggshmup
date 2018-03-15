@@ -75,5 +75,15 @@ namespace menus {
 	void showinv();
 }
 namespace battle {
+	struct BattleStats {
+		std::string name;
+		int str, intl, stm;
+		int lvl, elem;
+		int hp, mp;
+	};
+	extern BattleStats player, enemy;
+	void rest(BattleStats& st);
+	void statsbox(int x, int y);
 	void begin();
+	void exchange(int pdmg, int pelem);
 }

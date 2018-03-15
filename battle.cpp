@@ -1,22 +1,37 @@
 #include "globals.h"
+#include <sstream>
 using namespace std;
 
 namespace battle {
-
-	struct BattleStats {
-		std::string name;
-		int str, intl, stm;
-		int lvl, elem;
-		int hp, mp;
+	// define
+	enum Elements {
+		EL_PHYSICAL=0,
+		EL_FLAME
 	};
-	
-	BattleStats player={"player",1,1,4,6}, enemy={"blkslime",1,1,2,4};
-	
-	void exchange(int pdmg, int pelem);
+	struct Spell {
+		std::string name;
+		int lvl, dmg, mp, elem;
+	};
+	// lists
+	const vector<Spell> spellslist = {
+		{ "flame", 1, 1, 2, EL_FLAME }
+	};
+	BattleStats player={"player",1,1,3,5,EL_PHYSICAL}, enemy={"blkslime",1,1,1,3,EL_PHYSICAL};
+
 	
 	void rest(BattleStats& st) {
 		st.hp = st.stm * 5;
 		st.mp = st.intl * 5;
+	}
+	
+	void statsbox(int x, int y) {
+		const BattleStats& st = player;  // always show player for now
+		stringstream ss;
+		ss <<st.hp<<"/"<<st.stm*5<<"\n";
+		ss <<"str "<<st.str<<"\n";
+		ss <<"stm "<<st.stm<<"\n";
+		ss <<"int "<<st.intl<<"\n";
+		menus::txtbox({  int16_t(x), int16_t(y), 50, 37 }, ss.str() );
 	}
 	
 	void begin() {
@@ -33,6 +48,7 @@ namespace battle {
 			SDL_FillRect(buf, &dst, 0xffffffff);
 			dst.x++, dst.y++, dst.w-=2, dst.h-=2;
 			SDL_FillRect(buf, &dst, 0x000000ff);
+			statsbox(100, 90);
 			// main menu
 			auto opt = menus::showlist({ 10, 90, 60, 4+8*3 }, {"fight", "magic", "flee"});
 			if (opt == "flee")  break;
@@ -40,13 +56,25 @@ namespace battle {
 				exchange(player.str, 0);
 			}
 			else if (opt == "magic") {
+				// setup
+				vector<string> magiclist;
+				for (const auto& sp : spellslist)
+					if (player.lvl >= sp.lvl)  magiclist.push_back(sp.name);
+				magiclist.push_back("back");
+				// 
 				while (true) {
-					auto opt = menus::showlist({ 50, 90, 60, 4+8*4 }, {"flame", "back"});
+					Spell spell = {"none"};
+					auto opt = menus::showlist({ 50, 90, 60, 4+8*4 }, magiclist);
 					if (opt == "back")  break;
-					else if (opt == "flame") {
-						exchange(player.intl, 0);
+					else if (opt == "flame")  spell = spellslist[0];
+					// do cast
+					if (player.mp >= spell.mp) {
+						exchange(player.intl+1, spell.elem);
+						player.mp -= spell.mp;
 						break;
 					}
+					else
+						menus::dialogue("not enough mana.");
 				}
 			}
 			//
