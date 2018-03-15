@@ -28,10 +28,11 @@ namespace battle {
 		const BattleStats& st = player;  // always show player for now
 		stringstream ss;
 		ss <<st.hp<<"/"<<st.stm*5<<"\n";
+		ss <<"mp  "<<st.mp<<"\n";
 		ss <<"str "<<st.str<<"\n";
 		ss <<"stm "<<st.stm<<"\n";
 		ss <<"int "<<st.intl<<"\n";
-		menus::txtbox({  int16_t(x), int16_t(y), 50, 37 }, ss.str() );
+		menus::txtbox( { int16_t(x), int16_t(y), 50, 46 }, ss.str() );
 	}
 	
 	void begin() {

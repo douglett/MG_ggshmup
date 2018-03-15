@@ -44,10 +44,11 @@ int main(int argc, char** argv) {
 	
 	
 	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
-	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });
-	npcs::npclist.push_back({ "coffee", "nilcoffee", 1, 2 });
-	npcs::npclist.push_back({ "book",   "nilcoffee", 0, 3 });
+//	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });
+//	npcs::npclist.push_back({ "coffee", "nilcoffee", 1, 2 });
+//	npcs::npclist.push_back({ "book",   "nilcoffee", 0, 3 });
 	
+	gmap::spritelist.push_back({ "guy", {5*16, 5*16, 16, 16}, {{16, 18*2, 16, 18}, guy} });
 	gmap::spritelist.push_back({ "test1", {3*16, 3*16, 16, 16}, {{0}, NULL} });
 	gmap::spritelist.push_back({ "test2", {2*16, 3*16, 16, 16}, {{16, 18*2, 16, 18}, guy} });
 	

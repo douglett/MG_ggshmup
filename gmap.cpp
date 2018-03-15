@@ -136,6 +136,12 @@ namespace gmap {
 		return { r, tileset };
 	}
 	
+	Sprite& getsprite(const std::string& id) {
+		for (auto& sp : spritelist)
+			if (sp.id == id)  return sp;
+		fprintf(stderr, "missing sprite: %s\n", id.c_str()), exit(1);
+	}
+	
 	void paint(SDL_Rect viewport, int posx, int posy) {
 		for (int y = -1; y <= viewport.h; y++)
 		for (int x = -1; x <= viewport.w; x++)
