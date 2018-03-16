@@ -3,7 +3,7 @@
 #include <cassert>
 using namespace std;
 
-SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
+SDL_Surface *buf, *tileset, *guy, *guyshadow, *idsquare, *qbfont;
 
 
 int main(int argc, char** argv) {
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 	menus::init();
 	qbfont = loadbmp("qbfont.bmp");
 	guy = loadbmp("walker.bmp");
-	guyshadow = createshadow();
+	create_help_sprites();
 //	tileset = loadbmp("rpgindoor1.bmp");
 //	map::loadmap("room1.tmx");
 	tileset = loadbmp("hicontile.bmp");
@@ -36,12 +36,17 @@ int main(int argc, char** argv) {
 	return 0;	
 }
 
-SDL_Surface* createshadow() {
+void create_help_sprites() {
+	// create npc shadow
 	SDL_Surface* sf = mksurface(16, 16);
 	SDL_FillRect(sf, NULL, 0xff00ff00);
 	for (auto& r : vector<SDL_Rect>{ {2, 10, 12, 2}, {3, 9, 10, 4}, {4, 8, 8, 6} })
 		SDL_FillRect(sf, &r, 0x00000088);
-	return sf;
+	guyshadow = sf;
+	// create indicator square
+	sf = mksurface(16, 16);
+	SDL_FillRect(sf, NULL, 0xffaa0077);
+	idsquare = sf;
 }
 
 
@@ -77,8 +82,10 @@ int mainloop() {
 				}
 			}
 		
-		if (domove)
+		if (domove) {
 			walk2(dir);
+			if (action2(-1))  domove = 0;
+		}
 		recenter();
 		paint1();
 		flip3x();
@@ -130,7 +137,7 @@ void walk3(int dir) {
 }
 
 
-void action2(int dir) {
+int action2(int dir) {
 	assert(gmap::getsprite("guy") != NULL);
 	auto& spr = *gmap::getsprite("guy");
 	int x = spr.pos.x/16, y = spr.pos.y/16;
@@ -143,11 +150,11 @@ void action2(int dir) {
 	// get npc
 	gmap::Sprite* aspr = NULL;
 	for (auto& spr : gmap::spritelist)
-		if (spr.img.sf != NULL && spr.pos.x/16 == x && spr.pos.y/16 == y) {
+		if (spr.id != "guy" && spr.pos.x/16 == x && spr.pos.y/16 == y) {
 			aspr = &spr;
 			break;
 		}
-	if (aspr == NULL)  return;
+	if (aspr == NULL)  return 0;
 	printf("npc found: [%s]\n", aspr->id.c_str());
 	// action
 	if (aspr->id == "test2") {
@@ -155,6 +162,20 @@ void action2(int dir) {
 		paint1();
 		battle::begin();
 	}
+	else if (aspr->id == "door1") {
+		int pos = aspr->pos.y/16 * gmap::width + aspr->pos.x/16;
+		gmap::tilemap[0][pos] = 0;
+		gmap::tilemap[1][pos] = 0;
+	}
+	else if (aspr->id == "stairup1") {
+		menus::dialogue("the way is\nblocked.");
+	}
+	else if (aspr->id == "stairdown1") {
+		menus::dialogue("the way is\nblocked.");
+	}
+	else
+		return 0;
+	return 1;
 }
 
 

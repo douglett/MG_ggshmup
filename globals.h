@@ -11,12 +11,12 @@
 struct SrcImg { SDL_Rect r; SDL_Surface* sf; };
 
 // main
-extern SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
+extern SDL_Surface *buf, *tileset, *guy, *guyshadow, *idsquare, *qbfont;
 int  mainloop();
-SDL_Surface* createshadow();
+void create_help_sprites();
 void walk2(int dir);
 void walk3(int dir);
-void action2(int dir);
+int  action2(int dir);
 void recenter();
 void paint1();
 void flip3x();
@@ -60,6 +60,7 @@ namespace battle {
 		int hp, mp;
 	};
 	extern BattleStats player, enemy;
+	extern int plxp;
 	void rest(BattleStats& st);
 	void statsbox(int x, int y);
 	void begin();

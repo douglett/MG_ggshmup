@@ -101,9 +101,12 @@ namespace gmap {
 			case '.':  t =  3;  break;
 			case '#':  t =  8;  k = 1;  break;
 			case 'T':  t =  9;  k = 1;  break;
-			case 'D':  t = 10;  k = 1;  /*npcs::npclist.push_back({ "door1", "nilcoffee", mpos%width, mpos/width });*/  break;
-			case '/':  t = 11;  k = -1;  break;
-			case '|':  t = 12;  k = -1;  break;
+			case 'D':  t = 10;  k = 1;
+				spritelist.push_back({ "door1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
+			case '/':  t = 11;  k = -1;  
+				spritelist.push_back({ "stairup1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
+			case '|':  t = 12;  k = -1;  
+				spritelist.push_back({ "stairdown1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
 			}
 			// k = (t >= 4);
 			tilemap[0].push_back(t+1);
@@ -167,8 +170,10 @@ namespace gmap {
 			if (spr.pos.x > viewport.x + viewport.w || spr.pos.x + spr.pos.w < viewport.x)  continue;
 			if (spr.pos.y > viewport.y + viewport.h || spr.pos.y + spr.pos.h < viewport.y)  continue;
 			SDL_Rect dst = spr.pos, src = spr.img.r;
-			dst.y -= viewport.y + 6, dst.x -= viewport.x;
-			//SDL_FillRect(buf, &dst, 0xff0000ff);
+			dst.y -= viewport.y, dst.x -= viewport.x;
+			//SDL_FillRect(buf, &dst, 0xff000077);
+			//SDL_BlitSurface(idsquare, NULL, buf, &dst);
+			dst.y -= 6;
 			SDL_BlitSurface(spr.img.sf, &src, buf, &dst);
 		}
 	}

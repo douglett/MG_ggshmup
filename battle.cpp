@@ -18,7 +18,7 @@ namespace battle {
 		{ "flame", 1, 1, 2, EL_FLAME }
 	};
 	BattleStats player={"player",1,1,3,EL_PHYSICAL}, enemy={"blkslime",1,1,1,EL_PHYSICAL};
-
+	int plxp = 0;
 	
 	void rest(BattleStats& st) {
 		st.hp = st.stm * 5;
@@ -82,6 +82,16 @@ namespace battle {
 			}
 			//
 			if (player.hp == 0 || enemy.hp == 0)  break;
+		}
+		if (enemy.hp == 0) {
+			int xp = enemy.str + enemy.intl + enemy.stm;
+			stringstream ss;
+			ss << "you gain "<<xp<<" xp";
+			menus::dialogue(ss.str());
+			plxp += xp;
+		}
+		if (player.hp == 0) {
+			menus::dialogue("you die.");
 		}
 		// deinit
 		SDL_FreeSurface(sf);
