@@ -41,9 +41,11 @@ namespace gmap {
 	int collide(int tx, int ty);
 	SrcImg gettile(int l, int tx, int ty);
 	Sprite* getsprite(const std::string& id);
+	void delsprite(const Sprite* spr);
 	void paint();
 }
 namespace npcs {
+	int action(const std::string& mapname, gmap::Sprite* spr);
 }
 namespace menus {
 	extern int textspeed;

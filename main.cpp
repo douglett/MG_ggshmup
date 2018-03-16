@@ -157,25 +157,7 @@ int action2(int dir) {
 	if (aspr == NULL)  return 0;
 	printf("npc found: [%s]\n", aspr->id.c_str());
 	// action
-	if (aspr->id == "test2") {
-		menus::dialogue("test 123 hello\nworld!");
-		paint1();
-		battle::begin();
-	}
-	else if (aspr->id == "door1") {
-		int pos = aspr->pos.y/16 * gmap::width + aspr->pos.x/16;
-		gmap::tilemap[0][pos] = 0;
-		gmap::tilemap[1][pos] = 0;
-	}
-	else if (aspr->id == "stairup1") {
-		menus::dialogue("the way is\nblocked.");
-	}
-	else if (aspr->id == "stairdown1") {
-		menus::dialogue("the way is\nblocked.");
-	}
-	else
-		return 0;
-	return 1;
+	return npcs::action("", aspr);
 }
 
 

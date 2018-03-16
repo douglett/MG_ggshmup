@@ -145,6 +145,14 @@ namespace gmap {
 		return NULL;
 	}
 	
+	void delsprite(const Sprite* spr) {
+		for (auto it = spritelist.begin(); it != spritelist.end(); it++)
+			if (&(*it) == spr) {
+				spritelist.erase(it);
+				break;
+			}
+	}
+	
 	void paint() {
 		// calculate tile positions
 		int twidth = viewport.w / 16;
