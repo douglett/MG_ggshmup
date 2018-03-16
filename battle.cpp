@@ -13,10 +13,11 @@ namespace battle {
 		int lvl, dmg, mp, elem;
 	};
 	// lists
+//	const vector<int> levelxp = { 0, 5 };
 	const vector<Spell> spellslist = {
 		{ "flame", 1, 1, 2, EL_FLAME }
 	};
-	BattleStats player={"player",1,1,3,5,EL_PHYSICAL}, enemy={"blkslime",1,1,1,3,EL_PHYSICAL};
+	BattleStats player={"player",1,1,3,EL_PHYSICAL}, enemy={"blkslime",1,1,1,EL_PHYSICAL};
 
 	
 	void rest(BattleStats& st) {
@@ -58,9 +59,10 @@ namespace battle {
 			}
 			else if (opt == "magic") {
 				// setup
+				int plevel = player.str + player.intl + player.stm;
 				vector<string> magiclist;
 				for (const auto& sp : spellslist)
-					if (player.lvl >= sp.lvl)  magiclist.push_back(sp.name);
+					if (plevel >= sp.lvl)  magiclist.push_back(sp.name);
 				magiclist.push_back("back");
 				// 
 				while (true) {

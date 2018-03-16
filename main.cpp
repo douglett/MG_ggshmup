@@ -1,25 +1,9 @@
 #include "globals.h"
 #include <algorithm>
+#include <cassert>
 using namespace std;
 
 SDL_Surface *buf, *tileset, *guy, *guyshadow, *qbfont;
-namespace viewport {
-	int posx = 0,  posy = 0;
-	int offx = 0,  offy = 0;
-	std::string follow = "guy";
-	void recenter() {
-		if (follow == "")  return;
-		auto& n = npcs::getbyid(follow);
-		posx = n.x - 4;
-		posy = n.y - 4;
-		offx = n.px; // + 7;
-		offy = n.py;
-		if (offx >= 16)  offx %= 16, posx++;  // overflow
-		
-		gmap::viewport.x = (n.x - 4) * 16 + offx;
-		gmap::viewport.y = (n.y - 4) * 16 + offy;
-	}
-}
 
 
 int main(int argc, char** argv) {
@@ -41,12 +25,6 @@ int main(int argc, char** argv) {
 //	map::loadmap("room1.tmx");
 	tileset = loadbmp("hicontile.bmp");
 	gmap::loadascii("mil");
-	
-	
-	npcs::npclist.push_back({ "guy",    "walker", 5, 5, 0, 0, 2 });
-//	npcs::npclist.push_back({ "npc1",   "walker", 6, 3, 0, 0, 2 });
-//	npcs::npclist.push_back({ "coffee", "nilcoffee", 1, 2 });
-//	npcs::npclist.push_back({ "book",   "nilcoffee", 0, 3 });
 	
 	gmap::spritelist.push_back({ "guy", {5*16, 5*16, 16, 16}, {{16, 18*2, 16, 18}, guy} });
 	gmap::spritelist.push_back({ "test1", {3*16, 3*16, 16, 16}, {{0}, NULL} });
@@ -70,7 +48,8 @@ SDL_Surface* createshadow() {
 int mainloop() {
 	SDL_Event e;
 	int mainloop = 1;
-	int movedir = -1;
+	int dir = 2, domove = 0;
+	gmap::getsprite("guy")->img.r.y = dir*18;  // set first direction
 	
 	while (mainloop) {
 		while (SDL_PollEvent(&e))
@@ -78,11 +57,11 @@ int mainloop() {
 				mainloop = 0;
 			else if (e.type == SDL_KEYDOWN) {
 				switch (e.key.keysym.sym) {
-				case SDLK_UP:     movedir = 0;  break;
-				case SDLK_RIGHT:  movedir = 1;  break;
-				case SDLK_DOWN:   movedir = 2;  break;
-				case SDLK_LEFT:   movedir = 3;  break;
-				case SDLK_SPACE:  action2();  break;
+				case SDLK_UP:     dir = 0, domove = 1;  break;
+				case SDLK_RIGHT:  dir = 1, domove = 1;  break;
+				case SDLK_DOWN:   dir = 2, domove = 1;  break;
+				case SDLK_LEFT:   dir = 3, domove = 1;  break;
+				case SDLK_SPACE:  action2(dir);  break;
 				case 's':
 				case 'i':         menus::showinv();  break;
 				default:  ;
@@ -90,17 +69,17 @@ int mainloop() {
 			}
 			else if (e.type == SDL_KEYUP) {
 				switch (e.key.keysym.sym) {
-				case SDLK_UP:     if (movedir == 0)  movedir = -1;  break;
-				case SDLK_RIGHT:  if (movedir == 1)  movedir = -1;  break;
-				case SDLK_DOWN:   if (movedir == 2)  movedir = -1;  break;
-				case SDLK_LEFT:   if (movedir == 3)  movedir = -1;  break;
+				case SDLK_UP:     if (dir == 0)  domove = 0;  break;
+				case SDLK_RIGHT:  if (dir == 1)  domove = 0;  break;
+				case SDLK_DOWN:   if (dir == 2)  domove = 0;  break;
+				case SDLK_LEFT:   if (dir == 3)  domove = 0;  break;
 				default:  ;
 				}
 			}
 		
-		if (movedir >= 0)
-			walk2(movedir);
-		viewport::recenter();
+		if (domove)
+			walk2(dir);
+		recenter();
 		paint1();
 		flip3x();
 	}
@@ -108,63 +87,36 @@ int mainloop() {
 	return 0;
 }
 
-
-void walk1(int dir) {
-	// walkscreen pixels
-	for (int i=1; i<16; i++) {
-		switch (dir) {
-			case 0:  viewport::offy--;  break;
-			case 1:  viewport::offx++;  break;
-			case 2:  viewport::offy++;  break;
-			case 3:  viewport::offx--;  break;
-		}
-		paint1();
-		flip3x();
-	}
-	// walkscreen tiles
-	viewport::offy = viewport::offx = 0;
-	switch (dir) {
-		case 0:  viewport::posy--;  break;
-		case 1:  viewport::posx++;  break;
-		case 2:  viewport::posy++;  break;
-		case 3:  viewport::posx--;  break;
-	}
-}
-
 void walk2(int dir) {
-	auto& n =  npcs::getbyid("guy");
-	int x = n.x, y = n.y;
+	assert(gmap::getsprite("guy") != NULL);
+	auto& spr = *gmap::getsprite("guy");
+	spr.img.r.y = dir*18;
+	int x = spr.pos.x/16, y = spr.pos.y/16;
 	switch (dir) {
-		case 0:  y--;  n.dir = 0;  break;
-		case 1:  x++;  n.dir = 1;  break;
-		case 2:  y++;  n.dir = 2;  break;
-		case 3:  x--;  n.dir = 3;  break;
+		case 0:  y--;  break;
+		case 1:  x++;  break;
+		case 2:  y++;  break;
+		case 3:  x--;  break;
 	}
 	// collision 1
 	if (gmap::collide(x, y))  return;
-	// collision 2
-	for (const auto& nn : npcs::npclist)
-		if (nn.x == x && nn.y == y)  return;
 	// walk pixels
-	for (int i=1; i<16; i++) {
+	for (int i=1; i<=16; i++) {
 		switch (dir) {
-			case 0:  n.py--;  break;
-			case 1:  n.px++;  break;
-			case 2:  n.py++;  break;
-			case 3:  n.px--;  break;
+			case 0:  spr.pos.y--;  break;
+			case 1:  spr.pos.x++;  break;
+			case 2:  spr.pos.y++;  break;
+			case 3:  spr.pos.x--;  break;
 		}
-		viewport::recenter();
+		if (i == 7)  spr.img.r.x = 16*2;
+		recenter();
 		paint1();
 		flip3x();
 	}
-	// walk tile
-	n.px = n.py = 0;
-	switch (dir) {
-		case 0:  n.y--;  break;
-		case 1:  n.x++;  break;
-		case 2:  n.y++;  break;
-		case 3:  n.x--;  break;
-	}
+	// snap to tile
+	spr.img.r.x = 16*1;
+	spr.pos.x = round(spr.pos.x/16.0)*16;
+	spr.pos.y = round(spr.pos.y/16.0)*16;
 }
 
 
@@ -178,42 +130,11 @@ void walk3(int dir) {
 }
 
 
-void action1() {
-	auto& n = npcs::getbyid("guy");
-	int x = n.x, y = n.y;
-	switch (n.dir) {
-		case 0:  y--;  break;
-		case 1:  x++;  break;
-		case 2:  y++;  break;
-		case 3:  x--;  break;
-	}
-	// get npc
-	auto& nn = npcs::getbypos(x, y);
-	if (nn.id == "none")  return;
-	printf("[[%s]]\n", nn.id.c_str());  // show id
-	// action
-	if (nn.id == "npc1") {
-		menus::dialogue("hello, how are\nyou?");
-		menus::dialogue("i hope you are\nwell!");
-	}
-	else if (nn.id == "coffee") {
-		menus::dialogue("you sip some\ncoffee.\nmmm!");
-	}
-	else if (nn.id == "book") {
-		menus::dialogue("\"to be or not to\nbe;\"\na gripping read!");
-	}
-	else if (nn.id == "door1") {
-		gmap::tilemap[0][y * gmap::width + x] = 1;  // blank
-		gmap::tilemap[gmap::layers - 1][y * gmap::width + x] = 0;  // collision layer
-		npcs::erase(nn);
-	}
-}
-
-
-void action2() {
-	auto& n = npcs::getbyid("guy");
-	int x = n.x, y = n.y;
-	switch (n.dir) {
+void action2(int dir) {
+	assert(gmap::getsprite("guy") != NULL);
+	auto& spr = *gmap::getsprite("guy");
+	int x = spr.pos.x/16, y = spr.pos.y/16;
+	switch (dir) {
 		case 0:  y--;  break;
 		case 1:  x++;  break;
 		case 2:  y++;  break;
@@ -222,7 +143,10 @@ void action2() {
 	// get npc
 	gmap::Sprite* aspr = NULL;
 	for (auto& spr : gmap::spritelist)
-		if (spr.img.sf != NULL && spr.pos.x/16 == x && spr.pos.y/16 == y) { aspr = &spr;  break; }
+		if (spr.img.sf != NULL && spr.pos.x/16 == x && spr.pos.y/16 == y) {
+			aspr = &spr;
+			break;
+		}
 	if (aspr == NULL)  return;
 	printf("npc found: [%s]\n", aspr->id.c_str());
 	// action
@@ -234,27 +158,23 @@ void action2() {
 }
 
 
-static bool npc_sort_posy(const npcs::npc& l, const npcs::npc& r) {
-	return (l.y < r.y);
+void recenter() {
+	const auto* spr = gmap::getsprite("guy");
+	assert(spr != NULL);
+	gmap::viewport.x = spr->pos.x - 4*16 - 7;
+	gmap::viewport.y = spr->pos.y - 4*16;
 }
+
+
+//static bool npc_sort_posy(const npcs::npc& l, const npcs::npc& r) {
+//	return (l.y < r.y);
+//}
 
 void paint1() {
 	// cls
 	SDL_FillRect(buf, NULL, 0x111111ff);
 	// repaint map
-//	gmap::paint( { int16_t(viewport::posx), int16_t(viewport::posy), 10, 9 }, -viewport::offx, -viewport::offy );
 	gmap::paint();
-	// draw npcs
-	auto nls = npcs::npclist;
-	nls.sort(npc_sort_posy);
-	for (const auto& n : nls) {
-		if (!npcs::inview(n))  continue;
-		auto src = npcs::getsrc(n);
-		auto dst = npcs::getdst(n);
-		auto dst2 = dst;  dst2.y -= 6;  // must make a copy, to only use dst once
-		SDL_BlitSurface(guyshadow, NULL, buf, &dst);  // SDL BUG? This is changing dst!
-		SDL_BlitSurface(guy, &src, buf, &dst2);
-	}
 	qbprint(buf, 1, 1, "RPG proto");  // test info
 }
 

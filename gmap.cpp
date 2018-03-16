@@ -101,7 +101,7 @@ namespace gmap {
 			case '.':  t =  3;  break;
 			case '#':  t =  8;  k = 1;  break;
 			case 'T':  t =  9;  k = 1;  break;
-			case 'D':  t = 10;  k = 1;  npcs::npclist.push_back({ "door1", "nilcoffee", mpos%width, mpos/width });  break;
+			case 'D':  t = 10;  k = 1;  /*npcs::npclist.push_back({ "door1", "nilcoffee", mpos%width, mpos/width });*/  break;
 			case '/':  t = 11;  k = -1;  break;
 			case '|':  t = 12;  k = -1;  break;
 			}
@@ -114,43 +114,32 @@ namespace gmap {
 		return 0;
 	}
 	
-	int bounds(int l, int x, int y) {
-		return (l < 0 || x < 0 || y < 0 || l >= layers || x >= width || y >= height);
+	int bounds(int l, int tx, int ty) {
+		return (l < 0 || tx < 0 || ty < 0 || l >= layers || tx >= width || ty >= height);
 	}
 	
-	int collide(int x, int y) {
-		if (bounds(layers-1, x, y))  return 1;  // bounds check
-		if (tilemap[layers-1][y * width + x] > 0)  return 1;  // top layer collision
+	int collide(int tx, int ty) {
+		if (bounds(layers-1, tx, ty))  return 1;  // bounds check
+		if (tilemap[layers-1][ty * width + tx] > 0)  return 1;  // top layer collision
 		for (const auto& spr : spritelist)
-			if (spr.img.sf != NULL && spr.pos.x/16 == x && spr.pos.y/16 == y)  return 1;  // sprite collision
+			if (spr.img.sf != NULL && spr.pos.x/16 == tx && spr.pos.y/16 == ty)  return 1;  // sprite collision
 		return 0;
 	}
 	
-	SrcImg gettile(int l, int x, int y) {
-		if (bounds(l, x, y))  return { {0}, NULL };
+	SrcImg gettile(int l, int tx, int ty) {
+		if (bounds(l, tx, ty))  return { {0}, NULL };
 		const int tswidth = tileset->w / 16;
-		int t = tilemap[l][y * width + x];
+		int t = tilemap[l][ty * width + tx];
 		if (t == 0)  return { {0}, NULL };
 		t--;
 		SDL_Rect r = { int16_t(t % tswidth * 16), int16_t(t / tswidth * 16), 16, 16 };
 		return { r, tileset };
 	}
 	
-	Sprite& getsprite(const std::string& id) {
+	Sprite* getsprite(const std::string& id) {
 		for (auto& sp : spritelist)
-			if (sp.id == id)  return sp;
-		fprintf(stderr, "missing sprite: %s\n", id.c_str()), exit(1);
-	}
-	
-	void paint(SDL_Rect viewport, int posx, int posy) {
-		for (int y = -1; y <= viewport.h; y++)
-		for (int x = -1; x <= viewport.w; x++)
-		for (int l = 0; l < layers-1; l++) {
-			auto srcimg = gettile(l, viewport.x + x, viewport.y + y);
-			if (srcimg.sf == NULL)  continue;
-			SDL_Rect dst = { int16_t(x*16 + posx), int16_t(y*16 + posy), 0, 0 };
-			SDL_BlitSurface(srcimg.sf, &srcimg.r, buf, &dst);
-		}
+			if (sp.id == id)  return &sp;
+		return NULL;
 	}
 	
 	void paint() {
