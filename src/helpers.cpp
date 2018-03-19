@@ -5,6 +5,7 @@ using namespace std;
 SDL_Surface* loadbmp(const std::string& fname) {
 	// load and convert to match backbuffer
 	SDL_Surface* t1 = SDL_LoadBMP(fname.c_str());
+	assert(t1 != NULL);
 	SDL_Surface* t2 = SDL_ConvertSurface(t1, buf->format, buf->flags);
 	SDL_FreeSurface(t1);
 	// set transparency

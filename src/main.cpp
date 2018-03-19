@@ -21,10 +21,10 @@ int main(int argc, char** argv) {
 	qbfont = loadbmp("res/qbfont.bmp");
 	guy = loadbmp("res/walker.bmp");
 	create_help_sprites();
-//	tileset = loadbmp("rpgindoor1.bmp");
-//	map::loadmap("room1.tmx");
+	//tileset = loadbmp("res/rpgindoor1.bmp");
+	//map::loadmap("res/room1.tmx");
 	tileset = loadbmp("res/hicontile.bmp");
-	gmap::loadascii("mil");
+	gmap::loadascii("res/castle.map");
 	
 	gmap::spritelist.push_back({ "guy", {5*16, 5*16, 16, 16}, {{16, 18*2, 16, 18}, guy} });
 	gmap::spritelist.push_back({ "test1", {3*16, 3*16, 16, 16}, {{0}, NULL} });

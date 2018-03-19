@@ -72,46 +72,45 @@ namespace gmap {
 	}
 		
 	int loadascii(const std::string& fname) {
-		// load
-		vector<string> ascmap = {
-			"############",
-			"#..#.......#",
-			"#..#.......#",
-			"#..........#",
-			"#####..#####",
-			"#/........|#",
-			"#..........#",
-			"#..........#",
-			"#####DD#####",
-			"T,,,,,,,,,,T",
-			"T,,,,,,,,,,T",
-		};
+		// load from disc
+		fstream fs(fname, fstream::in);
+		assert(fs.is_open() == true);
+		vector<string> ascmap;
+		string s;
+		while (getline(fs, s))
+			ascmap.push_back(s);
+		fs.close();
+		assert(ascmap.size() > 0);
+		
 		// map size
 		height = ascmap.size();
 		width = ascmap[0].length();
+		
 		// parse to int list
 		tilemap = { {}, {} };
 		int mpos = 0;
-		for (const auto& s : ascmap)
-		for (char c : s) {
-			int t = 0, k = 0;
-			switch (c) {
-			case ' ':  t =  0;  break;
-			case ',':  t =  1;  break;
-			case '.':  t =  3;  break;
-			case '#':  t =  8;  k = 1;  break;
-			case 'T':  t =  9;  k = 1;  break;
-			case 'D':  t = 10;  k = 1;
-				spritelist.push_back({ "door1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
-			case '/':  t = 11;  k = -1;  
-				spritelist.push_back({ "stairup1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
-			case '|':  t = 12;  k = -1;  
-				spritelist.push_back({ "stairdown1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
+		for (const auto& s : ascmap) {
+			assert(s.size() == ascmap[0].size());
+			for (char c : s) {
+				int t = 0, k = 0;
+				switch (c) {
+				case ' ':  t =  0;  break;
+				case ',':  t =  1;  break;
+				case '.':  t =  3;  break;
+				case '#':  t =  8;  k = 1;  break;
+				case 'T':  t =  9;  k = 1;  break;
+				case 'D':  t = 10;  k = 1;
+					spritelist.push_back({ "door1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
+				case '/':  t = 11;  k = -1;  
+					spritelist.push_back({ "stairup1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
+				case '|':  t = 12;  k = -1;  
+					spritelist.push_back({ "stairdown1", {int16_t(mpos%width*16), int16_t(mpos/width*16), 16, 16}, {{0},NULL} });  break;
+				}
+				// k = (t >= 4);
+				tilemap[0].push_back(t+1);
+				tilemap[1].push_back(k);
+				mpos++;
 			}
-			// k = (t >= 4);
-			tilemap[0].push_back(t+1);
-			tilemap[1].push_back(k);
-			mpos++;
 		}
 		layers = tilemap.size();
 		return 0;
