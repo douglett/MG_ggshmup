@@ -72,20 +72,24 @@ namespace gmap {
 	}
 		
 	int loadascii(const std::string& fname) {
+		vector<string> ascmap;
+		string s;
 		// load from disc
 		fstream fs(fname, fstream::in);
 		assert(fs.is_open() == true);
-		vector<string> ascmap;
-		string s;
 		while (getline(fs, s))
 			ascmap.push_back(s);
 		fs.close();
-		assert(ascmap.size() > 0);
-		
+		// do load
+		return loadascii(ascmap);
+	}
+	
+	int loadascii(const std::vector<std::string>& ascmap) {
+		// test
+		assert(ascmap.size() > 0 && ascmap[0].size() > 0);
 		// map size
 		height = ascmap.size();
 		width = ascmap[0].length();
-		
 		// parse to int list
 		tilemap = { {}, {} };
 		int mpos = 0;
@@ -128,7 +132,7 @@ namespace gmap {
 		return 0;
 	}
 	
-	SrcImg gettile(int l, int tx, int ty) {
+	etc::SrcImg gettile(int l, int tx, int ty) {
 		if (bounds(l, tx, ty))  return { {0}, NULL };
 		const int tswidth = tileset->w / 16;
 		int t = tilemap[l][ty * width + tx];

@@ -13,7 +13,7 @@ namespace menus {
 		SDL_FillRect(buf, &dst, 0xffffffff);
 		SDL_Rect dst2 = dst;  dst2.x++, dst2.y++, dst2.w-=2, dst2.h-=2;
 		SDL_FillRect(buf, &dst2, 0x0000aaff);
-		qbprint(buf, dst.x+3, dst.y+3, txt.c_str());
+		etc::qbprint(buf, dst.x+3, dst.y+3, txt.c_str());
 	}
 	
 	void dialogue(const std::string& txt) {
@@ -52,7 +52,7 @@ namespace menus {
 			// flashing arrow
 			if (state == 2) {
 				anim = (anim+1) % 60;
-				qbprint(buf, dst.x+129, dst.y+31+anim/30, string()+char(31));
+				etc::qbprint(buf, dst.x+129, dst.y+31+anim/30, string()+char(31));
 			}
 			// display
 			flip3x();
@@ -62,7 +62,7 @@ namespace menus {
 	std::string showlist(SDL_Rect mbox, const std::vector<std::string>& mitems) {
 		//assert(mitems.size() && mitems.back() == "back");
 		// init
-		SDL_Surface* sf = clonesurface(buf);
+		SDL_Surface* sf = etc::clonesurface(buf);
 		int looping = 1;
 		int arrow = 0;
 		// action loop

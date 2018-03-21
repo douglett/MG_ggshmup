@@ -40,7 +40,7 @@ namespace battle {
 		// init
 		rest(player);
 		rest(enemy);
-		SDL_Surface* sf = clonesurface(buf);
+		SDL_Surface* sf = etc::clonesurface(buf);
 		// main loop
 		while (true) {
 			// repaint

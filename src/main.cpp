@@ -14,41 +14,60 @@ int main(int argc, char** argv) {
 	printf("hello world!\n");
 	
 	SDL_Init(SDL_INIT_EVERYTHING);
-	
 	SDL_SetVideoMode( 640, 480, 32, SDL_HWSURFACE );
 	buf = SDL_CreateRGBSurface(SDL_SWSURFACE, 160, 144, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-	menus::init();
-	qbfont = loadbmp("res/qbfont.bmp");
-	guy = loadbmp("res/walker.bmp");
-	create_help_sprites();
-	//tileset = loadbmp("res/rpgindoor1.bmp");
-	//map::loadmap("res/room1.tmx");
-	tileset = loadbmp("res/hicontile.bmp");
-	gmap::loadascii("res/castle.map");
-	
-	gmap::spritelist.push_back({ "guy", {5*16, 5*16, 16, 16}, {{16, 18*2, 16, 18}, guy} });
-	gmap::spritelist.push_back({ "test1", {3*16, 3*16, 16, 16}, {{0}, NULL} });
-	gmap::spritelist.push_back({ "test2", {2*16, 3*16, 16, 16}, {{16, 18*2, 16, 18}, guy} });
-	
+
+	init();	
 	mainloop();
 	
 	SDL_Quit();
 	return 0;	
 }
 
-void create_help_sprites() {
+int init() {
+	// load font
+	qbfont = etc::loadbmp("res/qbfont.bmp");
+	if (qbfont == NULL)  fprintf(stderr, "missing file: qbfont.bmp\n");
+	// create indicator square
+	idsquare = etc::mksurface(16, 16);
 	// create npc shadow
-	SDL_Surface* sf = mksurface(16, 16);
+	SDL_Surface* sf = etc::mksurface(16, 16);
 	SDL_FillRect(sf, NULL, 0xff00ff00);
 	for (auto& r : vector<SDL_Rect>{ {2, 10, 12, 2}, {3, 9, 10, 4}, {4, 8, 8, 6} })
 		SDL_FillRect(sf, &r, 0x00000088);
 	guyshadow = sf;
-	// create indicator square
-	sf = mksurface(16, 16);
-	SDL_FillRect(sf, NULL, 0xffaa0077);
-	idsquare = sf;
+	
+	menus::init();
+	guy = etc::loadbmp("res/walker.bmp");
+	//tileset = etc::loadbmp("res/rpgindoor1.bmp");
+	//map::loadmap("res/room1.tmx");
+	tileset = etc::loadbmp("res/hicontile.bmp");
+	gmap::loadascii({
+		"TTTTT,,TTTTT",
+		"TTTTT,TTTTTT",
+		"TTTTT,TTTTTT",
+		"TTTTT,TTTTTT",
+		"TTTTT,,TTTTT",
+		"TTTTT,,TTTTT",
+		"T,,TT,,TT,TT",
+		"T,,,,,,,,,,T",
+		"T,,,,,,,,,,T",
+		"#####DD#####",
+		"#..........#",
+		"#..........#",
+		"#####..#####",
+		"#/..#..#..|#",
+		"#..........#",
+		"############"
+	});
+	
+	// set npc sprites
+	etc::SrcImg guy1 = {{16, 18*2, 16, 18}, guy}, nil1 = {{0}, NULL};
+	gmap::spritelist.push_back({ "guy",   {5*16, 5*16, 16, 16}, guy1 });
+	gmap::spritelist.push_back({ "test1", {3*16, 3*16, 16, 16}, nil1 });
+	gmap::spritelist.push_back({ "test2", {2*16, 3*16, 16, 16}, guy1 });
+	return 0;
 }
-
 
 int mainloop() {
 	SDL_Event e;
@@ -178,7 +197,7 @@ void paint1() {
 	SDL_FillRect(buf, NULL, 0x111111ff);
 	// repaint map
 	gmap::paint();
-	qbprint(buf, 1, 1, "RPG proto");  // test info
+	etc::qbprint(buf, 1, 1, "RPG proto");  // test info
 }
 
 void flip3x() {
@@ -186,7 +205,7 @@ void flip3x() {
 	SDL_Rect bufpos = { 24, 8, 0, 0 };
 	SDL_FillRect( SDL_GetVideoSurface(), NULL, 0x0 );
 	SDL_BlitSurface( buf, NULL, SDL_GetVideoSurface(), &bufpos );
-	scalex( SDL_GetVideoSurface(), 3 );
+	etc::scalex( SDL_GetVideoSurface(), 3 );
 	SDL_Flip( SDL_GetVideoSurface() );
 	SDL_Delay(16);
 }
