@@ -43,9 +43,6 @@ namespace gmap {
 	void delsprite(const Sprite* spr);
 	void paint();
 }
-namespace npcs {
-	int action(const std::string& mapname, gmap::Sprite* spr);
-}
 namespace menus {
 	extern int textspeed;
 	int init();
@@ -66,4 +63,9 @@ namespace battle {
 	void statsbox(int x, int y);
 	void begin();
 	void exchange(int pdmg, int pelem);
+}
+
+namespace mygame {
+	int init();
+	int action(const std::string& mapname, gmap::Sprite* spr);
 }

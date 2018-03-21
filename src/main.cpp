@@ -36,8 +36,11 @@ int init() {
 	for (auto& r : vector<SDL_Rect>{ {2, 10, 12, 2}, {3, 9, 10, 4}, {4, 8, 8, 6} })
 		SDL_FillRect(sf, &r, 0x00000088);
 	guyshadow = sf;
-	
+	// subsystems
 	menus::init();
+	
+	// load user data
+	mygame::init();
 	guy = etc::loadbmp("res/walker.bmp");
 	//tileset = etc::loadbmp("res/rpgindoor1.bmp");
 	//map::loadmap("res/room1.tmx");
@@ -178,7 +181,7 @@ int action2(int dir) {
 	if (aspr == NULL)  return 0;
 	printf("npc found: [%s]\n", aspr->id.c_str());
 	// action
-	return npcs::action("", aspr);
+	return mygame::action("", aspr);
 }
 
 
