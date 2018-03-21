@@ -52,8 +52,9 @@ int init() {
 		"T,,TT,,TT,TT",
 		"T,,,,,,,,,,T",
 		"T,,,,,,,,,,T",
+		"T,,,##,,,,,T",
 		"#####DD#####",
-		"#..........#",
+		"#.....##...#",
 		"#..........#",
 		"#####..#####",
 		"#/..#..#..|#",
@@ -63,9 +64,10 @@ int init() {
 	
 	// set npc sprites
 	etc::SrcImg guy1 = {{16, 18*2, 16, 18}, guy}, nil1 = {{0}, NULL};
-	gmap::spritelist.push_back({ "guy",   {5*16, 5*16, 16, 16}, guy1 });
-	gmap::spritelist.push_back({ "test1", {3*16, 3*16, 16, 16}, nil1 });
-	gmap::spritelist.push_back({ "test2", {2*16, 3*16, 16, 16}, guy1 });
+	int ym = gmap::height-1;
+	gmap::spritelist.push_back({ "guy",      {5*16, int16_t((ym-1)*16), 16, 16}, guy1 });
+	gmap::spritelist.push_back({ "trap1",    {1*16, int16_t((ym-5)*16), 16, 16}, nil1 });
+	gmap::spritelist.push_back({ "test2",    {5*16, int16_t((ym-5)*16), 16, 16}, guy1 });
 	return 0;
 }
 
