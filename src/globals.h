@@ -45,6 +45,7 @@ namespace gmap {
 }
 namespace menus {
 	extern int textspeed;
+	extern std::vector<std::string> items;
 	int init();
 	void txtbox(SDL_Rect dst, const std::string& txt);
 	void dialogue(const std::string& str);

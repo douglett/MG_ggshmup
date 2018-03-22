@@ -4,6 +4,7 @@ using namespace std;
 
 namespace menus {
 	int textspeed = 1;
+	std::vector<std::string> items;
 
 	int init() {
 		return 0;
@@ -103,8 +104,9 @@ namespace menus {
 			if      (item == "back" )  break;
 			else if (item == "quit" )  exit(0);
 			else if (item == "items")  {
+				vector<string> mitems = items;
+				mitems.push_back("back");
 				while (true) {
-					vector<string> mitems = { "back" };
 					auto item = showlist({ 55+2, 10, 100, 120 }, mitems);
 					if      (item == "back" )  break;
 				}

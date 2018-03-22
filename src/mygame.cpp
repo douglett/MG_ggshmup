@@ -28,7 +28,7 @@ namespace mygame {
 		etc::SrcImg guy1 = {{16, 18*2, 16, 18}, guy}, nil1 = {{0}, NULL};
 		int ym = gmap::height-1;
 		gmap::spritelist.push_back({ "guy",      {5*16, int16_t((ym-1)*16), 16, 16}, guy1 });
-		gmap::spritelist.push_back({ "trap1",    {1*16, int16_t((ym-5)*16), 16, 16}, nil1 });
+		gmap::spritelist.push_back({ "secret1",  {1*16, int16_t((ym-5)*16), 16, 16}, nil1 });
 		gmap::spritelist.push_back({ "test2",    {5*16, int16_t((ym-5)*16), 16, 16}, guy1 });
 		//
 		battle::rest(battle::player);
@@ -44,6 +44,11 @@ namespace mygame {
 			battle::begin();
 			if (battle::player.hp == 0)  exit(0);
 			if (battle::enemy.hp == 0)  gmap::delsprite(spr);
+		}
+		else if (spr->id == "secret1") {
+			string item = "h-potion";
+			menus::dialogue("You found a\n"+item+"!");
+			menus::items.push_back(item);
 		}
 		else if (spr->id == "door1") {
 			int pos = spr->pos.y/16 * gmap::width + spr->pos.x/16;
