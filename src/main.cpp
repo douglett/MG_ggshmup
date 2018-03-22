@@ -36,41 +36,13 @@ int init() {
 	for (auto& r : vector<SDL_Rect>{ {2, 10, 12, 2}, {3, 9, 10, 4}, {4, 8, 8, 6} })
 		SDL_FillRect(sf, &r, 0x00000088);
 	guyshadow = sf;
-	// subsystems
-	menus::init();
-	
 	// load user data
-	mygame::init();
 	guy = etc::loadbmp("res/walker.bmp");
-	//tileset = etc::loadbmp("res/rpgindoor1.bmp");
-	//map::loadmap("res/room1.tmx");
 	tileset = etc::loadbmp("res/hicontile.bmp");
-	gmap::loadascii({
-		"TTTTT,,TTTTT",
-		"TTTTT,TTTTTT",
-		"TTTTT,TTTTTT",
-		"TTTTT,TTTTTT",
-		"TTTTT,,TTTTT",
-		"TTTTT,,TTTTT",
-		"T,,TT,,TT,TT",
-		"T,,,,,,,,,,T",
-		"T,,,,,,,,,,T",
-		"T,,,##,,,,,T",
-		"#####DD#####",
-		"#.....##...#",
-		"#..........#",
-		"#####..#####",
-		"#/..#..#..|#",
-		"#..........#",
-		"############"
-	});
-	
-	// set npc sprites
-	etc::SrcImg guy1 = {{16, 18*2, 16, 18}, guy}, nil1 = {{0}, NULL};
-	int ym = gmap::height-1;
-	gmap::spritelist.push_back({ "guy",      {5*16, int16_t((ym-1)*16), 16, 16}, guy1 });
-	gmap::spritelist.push_back({ "trap1",    {1*16, int16_t((ym-5)*16), 16, 16}, nil1 });
-	gmap::spritelist.push_back({ "test2",    {5*16, int16_t((ym-5)*16), 16, 16}, guy1 });
+	// systems
+	menus::init();
+	// user init
+	mygame::init();
 	return 0;
 }
 

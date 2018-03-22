@@ -4,6 +4,34 @@ using namespace std;
 namespace mygame {
 
 	int init() {
+		// castle map
+		gmap::loadascii({
+			"TTTTT,,TTTTT",
+			"TTTTT,TTTTTT",
+			"TTTTT,TTTTTT",
+			"TTTTT,TTTTTT",
+			"TTTTT,,TTTTT",
+			"TTTTT,,TTTTT",
+			"T,,TT,,TT,TT",
+			"T,,,,,,,,,,T",
+			"T,,,,,,,,,,T",
+			"T,,,##,,,,,T",
+			"#####DD#####",
+			"#.....##...#",
+			"#..........#",
+			"#####..#####",
+			"#/..#..#..|#",
+			"#..........#",
+			"############"
+		});
+		// set npc sprites
+		etc::SrcImg guy1 = {{16, 18*2, 16, 18}, guy}, nil1 = {{0}, NULL};
+		int ym = gmap::height-1;
+		gmap::spritelist.push_back({ "guy",      {5*16, int16_t((ym-1)*16), 16, 16}, guy1 });
+		gmap::spritelist.push_back({ "trap1",    {1*16, int16_t((ym-5)*16), 16, 16}, nil1 });
+		gmap::spritelist.push_back({ "test2",    {5*16, int16_t((ym-5)*16), 16, 16}, guy1 });
+		//
+		battle::rest(battle::player);
 		return 0;
 	}
 	
@@ -11,7 +39,7 @@ namespace mygame {
 		if (spr == NULL)  
 			return 0;
 		else if (spr->id == "test2") {
-			menus::dialogue("test 123 hello\nworld!");
+			menus::dialogue("Halt! Return to\nyour cell or die!");
 			paint1();
 			battle::begin();
 			if (battle::player.hp == 0)  exit(0);

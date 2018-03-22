@@ -38,7 +38,7 @@ namespace battle {
 	
 	void begin() {
 		// init
-		rest(player);
+		//rest(player);
 		rest(enemy);
 		SDL_Surface* sf = etc::clonesurface(buf);
 		// main loop
