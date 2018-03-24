@@ -27,9 +27,11 @@ namespace mygame {
 		// set npc sprites
 		etc::SrcImg guy1 = {{16, 18*2, 16, 18}, guy}, nil1 = {{0}, NULL};
 		int ym = gmap::height-1;
-		gmap::spritelist.push_back({ "guy",      {5*16, int16_t((ym-1)*16), 16, 16}, guy1 });
-		gmap::spritelist.push_back({ "secret1",  {1*16, int16_t((ym-5)*16), 16, 16}, nil1 });
-		gmap::spritelist.push_back({ "test2",    {5*16, int16_t((ym-5)*16), 16, 16}, guy1 });
+		gmap::spritelist.push_back({ "guy",      {5*16, int16_t((ym-1)*16),  16, 16},  guy1 });
+		gmap::spritelist.push_back({ "secret1",  {1*16, int16_t((ym-5)*16),  16, 16},  nil1 });
+		gmap::spritelist.push_back({ "enemy1",   {5*16, int16_t((ym-5)*16),  16, 16},  guy1 });
+		gmap::spritelist.push_back({ "enemy2",   {5*16, int16_t((ym-14)*16), 16, 16},  guy1 });
+		gmap::spritelist.push_back({ "secret2",  {6*16, int16_t((ym-16)*16), 16, 16},  nil1 });
 		//
 		battle::rest(battle::player);
 		return 0;
@@ -38,18 +40,8 @@ namespace mygame {
 	int action(const std::string& mapname, gmap::Sprite* spr) {
 		if (spr == NULL)  
 			return 0;
-		else if (spr->id == "test2") {
-			menus::dialogue("Halt! Return to\nyour cell or die!");
-			paint1();
-			battle::begin();
-			if (battle::player.hp == 0)  exit(0);
-			if (battle::enemy.hp == 0)  gmap::delsprite(spr);
-		}
-		else if (spr->id == "secret1") {
-			string item = "h-potion";
-			menus::dialogue("You found a\n"+item+"!");
-			menus::items.push_back(item);
-		}
+			
+		// special
 		else if (spr->id == "door1") {
 			int pos = spr->pos.y/16 * gmap::width + spr->pos.x/16;
 			gmap::tilemap[0][pos] = 0;
@@ -62,6 +54,36 @@ namespace mygame {
 		else if (spr->id == "stairdown1") {
 			menus::dialogue("the way is\nblocked.");
 		}
+		
+		// enemies
+		else if (spr->id == "enemy1") {
+			menus::dialogue("Halt! Return to\nyour cell or die!");
+			paint1();
+			battle::begin();
+			if (battle::player.hp == 0)  exit(0);
+			if (battle::enemy.hp  == 0)  gmap::delsprite(spr);
+		}
+		else if (spr->id == "enemy2") {
+			menus::dialogue("What are you doing\nin my forest?");
+			paint1();
+			battle::begin();
+			if (battle::player.hp == 0)  exit(0);
+			if (battle::enemy.hp  == 0)  gmap::delsprite(spr);
+		}
+		
+		// secrets
+		else if (spr->id == "secret1") {
+			string item = "h-potion";
+			menus::dialogue("You found a\n"+item+"!");
+			menus::items.push_back(item);
+		}
+		else if (spr->id == "secret2") {
+			string item = "m-potion";
+			menus::dialogue("You found a\n"+item+"!");
+			menus::items.push_back(item);
+		}
+		
+		// end
 		else
 			return 0;
 		return 1;

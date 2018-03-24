@@ -1,5 +1,6 @@
 #include "globals.h"
 #include <cassert>
+#include <algorithm>
 using namespace std;
 
 namespace menus {
@@ -103,14 +104,25 @@ namespace menus {
 			auto item = showlist({ 2, 10, 52, 29 }, mitems);
 			if      (item == "back" )  break;
 			else if (item == "quit" )  exit(0);
-			else if (item == "items")  {
-				vector<string> mitems = items;
-				mitems.push_back("back");
+			else if (item == "items") 
 				while (true) {
+					vector<string> mitems = items;
+					mitems.push_back("back");
 					auto item = showlist({ 55+2, 10, 100, 120 }, mitems);
 					if      (item == "back" )  break;
+					else if (item == "h-potion") {
+						int hp = min(battle::player.stm*5 - battle::player.hp, 5);
+						battle::player.hp += hp;
+						dialogue("you recover "+to_string(hp)+" hp!");
+						items.erase( find(items.begin(), items.end(), item) );
+					}
+					else if (item == "m-potion") {
+						int mp = min(battle::player.intl*5 - battle::player.mp, 5);
+						battle::player.mp += mp;
+						dialogue("you recover "+to_string(mp)+" mp!");
+						items.erase( find(items.begin(), items.end(), item) );
+					}
 				}
-			}
 		}
 	}
 	
