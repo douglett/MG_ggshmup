@@ -2,4 +2,3 @@
 *.exe
 *.layout
 Makefile.win
-*.dll
